@@ -17,4 +17,5 @@ Fight [Obsessive–compulsive disorder](https://en.wikipedia.org/wiki/Obsessive%
 * To build static website: `npm run build`. Artifacts will be stored to `dist` folder
     * To change output dir: `npm run build -- --outDir <dirname>`
 * To preview built static website: `npm run preview`
-    * Similar to above, you can expose host or change port with: `npm run preview -- <options>`
+    * Similar to above, you can specify outDir, change port or expose host:<br>
+      `npm run preview -- outDir docs --port 4000 --host`
