@@ -11,8 +11,10 @@ Fight [Obsessive–compulsive disorder](https://en.wikipedia.org/wiki/Obsessive%
 * Install dependencies: `npm install`.<br>
   This will create `node_modules` folder and `package-lock.json`
 * To run dev server: `npm run dev`
-    * If you run development in docker container, you need to expose port to your host by `npm run dev -- --host`
+    * If you run development in docker container,<br>
+      you need to expose port to your host by `npm run dev -- --host`
     * To specify port: `npm run dev -- --port 1234`
 * To build static website: `npm run build`. Artifacts will be stored to `dist` folder
+    * To change output dir: `npm run build -- --outDir <dirname>`
 * To preview built static website: `npm run preview`
     * Similar to above, you can expose host or change port with: `npm run preview -- <options>`
