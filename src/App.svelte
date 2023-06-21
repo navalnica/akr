@@ -64,3 +64,7 @@
 {/if}
 
 <p>Correct: {nCorrect}. Mistakes: {nMistakes}</p>
+
+<a href="https://github.com/navalnica/akr" target="_blank" rel="noreferrer">
+	<i class="fa-brands fa-github" style='font-size:18px'></i> GitHub
+</a>
