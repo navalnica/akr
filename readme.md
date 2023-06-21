@@ -32,4 +32,4 @@ The project is in development. You are welcome to help to implement following fe
     * To change output dir: `npm run build -- --outDir <dirname>`
 * To preview built static website: `npm run preview`
     * Similar to above, you can specify outDir, change port or expose host:<br>
-      `npm run preview -- outDir docs --port 4000 --host`
+      `npm run preview -- --outDir docs --port 4000 --host`
