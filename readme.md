@@ -1,6 +1,6 @@
 ## Fight OCD in your browser!
 
-Fight Obsessive–compulsive disorder through solving simple problems and gaining trust and confidence for yourself.
+Fight [Obsessive–compulsive disorder](https://en.wikipedia.org/wiki/Obsessive%E2%80%93compulsive_disorder) through solving simple problems and gaining trust and confidence for yourself.
 
 * The project is in development - new features are to be added in future
 
