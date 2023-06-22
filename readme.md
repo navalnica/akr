@@ -15,8 +15,7 @@ The project is in development. You are welcome to help to implement following fe
   * IBAN
   * passport number
   * random integers. length and digits separator is to be specified by input fields
-* translation into Belarusian
-* support for dark/light themes
+* translate into Belarusian
 
 ## How to build
 * The project was built from the Vite+Svelte template

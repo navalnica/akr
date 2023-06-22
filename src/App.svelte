@@ -1,4 +1,6 @@
 <script>
+	import ThemeSwitcher from "./lib/ThemeSwitcher.svelte";
+
 	let visibleTask = true;
 	let visibleGuess = false;
 	let visibleResult = false;
@@ -20,14 +22,18 @@
 	}
 	function checkGuess() {
 		visibleResult = true;
+		let inputGuess = document.getElementById('input-guess');
 		if (guess == number){
 			resultText = 'Correct';
 			nCorrect += 1;
 			solved = true;
+			inputGuess.setAttribute('aria-invalid', 'false');
+			inputGuess.readOnly = true;
 		}
 		else{
 			resultText = 'Mistake';
 			nMistakes += 1;
+			inputGuess.setAttribute('aria-invalid', 'true');
 		}
 	}
 	function hideResult() {
@@ -48,6 +54,11 @@
 	}
 </script>
 
+<hgroup>
+	<h2>OCD fighter</h2>
+	<h3>Fight Obsessive–compulsive disorder by solving simple tasks</h3>
+</hgroup>
+
 {#if visibleTask}
 	<p>Number: {number}</p>
 	<button on:click={readyToGuess}>Ready</button>
@@ -64,6 +75,8 @@
 {/if}
 
 <p>Correct: {nCorrect}. Mistakes: {nMistakes}</p>
+
+<ThemeSwitcher />
 
 <a href="https://github.com/navalnica/akr" target="_blank" rel="noreferrer">
 	<i class="fa-brands fa-github" style='font-size:18px'></i> GitHub
