@@ -119,45 +119,55 @@
 
 <div id="appForm">
 	<div id="controls">
-		<select id="selectMode" bind:value={selectedMode} on:change={changeMode}>
-			{#each modes as mode}
-				<option value={mode.id}>{mode.text}</option>
-			{/each}
-		</select>
-
-		<p id="scoreCounter">Correct: {nCorrect}. Mistakes: {nMistakes}</p>
-	
-		<label id="controlLength">Number length: {numberLength}
-			<input type="range" min=4 max=20 bind:value={numberLength} on:change={generateNumber}>
-		</label>
-		<label id="controlSeparator">Separator
-			<select bind:value={sequenceSeparator} on:change={separateSequence}>
-				{#each separators as sep}
-					<option value={sep.id}>{sep.text}</option>
+		<div id="controlsRow1">
+			<select id="selectMode" bind:value={selectedMode} on:change={changeMode}>
+				{#each modes as mode}
+					<option value={mode.id}>{mode.text}</option>
 				{/each}
 			</select>
-		</label>
-		<label id="controlSeparatorStep">{separateLabel}
-			<input type="range" min=2 max=5 disabled={sequenceSeparator == ''} bind:value={separateStep} on:change={separateSequence}/>
-		</label>
+
+			<p id="scoreCounter">Correct: {nCorrect}. Mistakes: {nMistakes}</p>
+		</div>
+		
+		<details id="detailsAccordion">
+			<summary id="detailsAccordionSummary">Settings</summary>
+			<label id="controlLength">Number length: {numberLength}
+				<input type="range" min=4 max=20 bind:value={numberLength} on:input={generateNumber}>
+			</label>
+			<div id="controlGroupSeparator">
+				<label id="controlSeparator">Separator
+					<select bind:value={sequenceSeparator} on:change={separateSequence}>
+						{#each separators as sep}
+							<option value={sep.id}>{sep.text}</option>
+						{/each}
+					</select>
+				</label>
+				<label id="controlSeparatorStep">{separateLabel}
+					<input type="range" min=2 max=5 disabled={sequenceSeparator == ''} bind:value={separateStep} on:input={separateSequence}/>
+				</label>
+			</div>
+		</details>		
 	</div>
 	
-	{#if visibleTask}
-		<p>Number: <strong>{targetSequence}</strong></p>
-		<button id="buttonReady" on:click={readyToGuess}>Ready</button>
-	{/if}
+	<article id="taskDescription">
+		{#if visibleTask}
+			<p>Number: <strong>{targetSequence}</strong></p>
+			<button id="buttonReady" on:click={readyToGuess}>Ready</button>
+		{/if}
 
-	{#if visibleGuess}
-		<label for='input-guess'>Your guess</label>
-		<div id="inputRow">
+		{#if visibleGuess}
+			<label for='input-guess'>Your guess</label>
+			<!-- TODO: restrict input to numbers and separators only -->
 			<input type='text' id='input-guess' bind:value={guess} on:input={(e) => hideResult()}/>
-			<button id='button-check' on:click={checkGuess} disabled={solved}>Check</button>
-			<button id='button-restart' on:click={restart}>Restart</button>	
-		</div>
+			<div id="guessButtonRow">
+				<button id='button-check' on:click={checkGuess} disabled={solved}>Check</button>
+				<button id='button-restart' on:click={restart}>Restart</button>	
+			</div>
 		{#if visibleResult}
 			<p>{resultText}</p>
 		{/if}
 	{/if}
+	</article>
 </div>
 
 <div id="footer">
@@ -176,52 +186,88 @@
 	}
 
 	#controls {
-		display: grid;
-		grid-template-columns: 1fr, 1fr;
-		grid-template-rows: repeat(3, 100px);
+		display: flex;
+		flex-direction: column;
 		gap: 1em;
+	}
+
+	#controlsRow1 {
+		display: flex;
+		justify-content: center;
+		align-items: center;
+		gap: 1rem;
 	}
 
 	#selectMode {
-		grid-area: 1 / 1 / 1 / 2;
+		flex: 1;
 	}
 	#scoreCounter {
-		grid-area: 2 / 1 / 2 / 2;
+		flex: 2;
 	}
-	#controlLength {
-		grid-area: 1 / 2 / 1 / 3;
+
+	#detailsAccordion {
+		margin-bottom: 1rem;
+		border: none;
+	}
+	#detailsAccordionSummary {
+		width: 20%;
+	}
+
+	#controlGroupSeparator {
+		display: flex;
+		gap: 1rem;
+		align-items: safe center;
 	}
 	#controlSeparator {
-		grid-area: 2 / 2 / 2 / 3;
+		flex: 1;
+		max-width: 230px;
 	}
 	#controlSeparatorStep {
-		grid-area: 3 / 2 / 3 / 3;
-	}
-
-	/* #subcontrols {
-		display: flex;
-		gap: 1em;
-		justify-content: space-around;
-	} */
-
-	#inputRow {
-		display: flex;
-		gap: 0.5em;
-	}
-
-	#inputRow > input {
-		flex: 7;
-	}
-	#inputRow > button {
 		flex: 1;
+		max-width: 230px;
+	}
+
+	#taskDescription {
+		display: flex;
+		flex-direction: column;
+		justify-content: center;
+		align-items: stretch;
+		height: 250px;
+		margin-top: 0;
 	}
 
 	#buttonReady {
 		width: 30%;
 		align-self: center;
 	}
+	#guessButtonRow {
+		display: flex;
+		gap: 0.5rem;
+	}
+
+	#guessButtonRow > button {
+		flex: 1;
+	}
 
 	label {
 		text-align: left;
+	}
+
+	input[type='range'] {
+		margin-bottom: calc(var(--spacing) * .25);
+	}
+
+	select {
+		padding-top: calc(var(--spacing) * .25);
+		padding-bottom: calc(var(--spacing) * .25);
+	}
+
+	details[open] summary ~ * {
+		animation: sweep .7s ease-in-out;
+	}
+
+	@keyframes sweep {
+		0%    {opacity: 0; }
+		100%  {opacity: 1; }
 	}
 </style>
