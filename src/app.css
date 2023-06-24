@@ -42,7 +42,7 @@
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
 
-  --form-element-spacing-vertical: 0.5rem;
+  --form-element-spacing-vertical: 0.3rem;
   --form-element-spacing-horizontal: 0.7rem;
 }
 
@@ -63,9 +63,4 @@ body {
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
-}
-
-button {
-  border-radius: 7px;
-  font-weight: 370;
 }

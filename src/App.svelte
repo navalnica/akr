@@ -3,7 +3,6 @@
 
 	let visibleTask = true;
 	let visibleGuess = false;
-	let visibleResult = false;
 	
 	let guess = '';
 	let resultText = '';
@@ -61,24 +60,28 @@
 	function readyToGuess() {
 		visibleTask = false;
 		visibleGuess = true;
-		visibleResult = false;
 	}
 	function checkGuess() {
-		visibleResult = true;
-		let inputGuess = document.getElementById('input-guess');
+		let paragraphResult = document.getElementById('paragraphResult');
+		paragraphResult.style.visibility = "visible";
 		
+		let inputGuess = document.getElementById('input-guess');
+
 		// forbid input field to accept non-digits except for separator
 		let guessInt = guess.replace(/\D/g, '');  // remove non-digit characters
 		guessInt = parseInt(guessInt, 10);
-
+		
 		console.log("Check guess ", guess, " to be equal to target ", numberInt)
-
+		
 		if (guessInt === numberInt){
 			resultText = 'Correct';
 			nCorrect += 1;
 			solved = true;
 			inputGuess.setAttribute('aria-invalid', 'false');
 			inputGuess.readOnly = true;
+
+			let btnShowAnswer = document.getElementById('button-show-answer')
+			btnShowAnswer.disabled = true;
 		}
 		else{
 			resultText = 'Mistake';
@@ -87,7 +90,8 @@
 		}
 	}
 	function hideResult() {
-		visibleResult = false;
+		let paragraphResult = document.getElementById('paragraphResult');
+		paragraphResult.style.visibility = "hidden";
 	}
 	
 	function restart() {
@@ -96,6 +100,20 @@
 		visibleTask = true;
 		guess = '';
 		solved = false;
+
+		let paragraphResult = document.getElementById('paragraphResult');
+		paragraphResult.style.visibility = "hidden";
+	}
+
+	function showAnswer() {
+		resultText = targetSequence;
+		solved = true;
+
+		let inputGuess = document.getElementById('input-guess');
+		inputGuess.readOnly = true;
+
+		let paragraphResult = document.getElementById('paragraphResult');
+		paragraphResult.style.visibility = "visible";
 	}
 
 	let modes = [
@@ -158,14 +176,14 @@
 		{#if visibleGuess}
 			<label for='input-guess'>Your guess</label>
 			<!-- TODO: restrict input to numbers and separators only -->
-			<input type='text' id='input-guess' bind:value={guess} on:input={(e) => hideResult()}/>
+			<input type='text' id='input-guess' bind:value={guess} on:input={() => hideResult()}/>
 			<div id="guessButtonRow">
+				<button id='button-restart' class='contrast outline' on:click={restart}>Restart</button>	
+				<button id='button-show-answer' class='contrast outline' on:click={showAnswer} disabled={solved}>Show Answer</button>	
 				<button id='button-check' on:click={checkGuess} disabled={solved}>Check</button>
-				<button id='button-restart' on:click={restart}>Restart</button>	
 			</div>
-		{#if visibleResult}
-			<p>{resultText}</p>
-		{/if}
+			<!-- Layout changes when paragraph gets visible -->
+			<p id="paragraphResult">{resultText}</p>
 	{/if}
 	</article>
 </div>
@@ -210,7 +228,7 @@
 		border: none;
 	}
 	#detailsAccordionSummary {
-		width: 20%;
+		width: clamp(90px, 20%, 20%);
 	}
 
 	#controlGroupSeparator {
@@ -248,6 +266,9 @@
 	#guessButtonRow > button {
 		flex: 1;
 	}
+	#paragraphResult {
+		visibility: hidden;
+	}
 
 	label {
 		text-align: left;
@@ -269,5 +290,11 @@
 	@keyframes sweep {
 		0%    {opacity: 0; }
 		100%  {opacity: 1; }
+	}
+
+	button {
+		border-radius: 7px;
+		font-weight: 370;
+		font-size: 0.8rem;
 	}
 </style>
