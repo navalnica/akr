@@ -11,10 +11,13 @@ You can try it yourself here: [navalnica.github.io/akr](https://navalnica.github
 The project is in development. You are welcome to help to implement following features!
 
 * Switching between several modes:
-  * Phone numbers
   * IBAN
   * passport number
-  * random integers. length and digits separator is to be specified by input fields
+  * sequence
+    * sequence of letters
+    * sequence of letters & numbers
+    * probably generalize Number mode
+* Add 2 new modes: remembering & look-and-write
 * translate into Belarusian
 
 ## How to build
@@ -27,7 +30,7 @@ The project is in development. You are welcome to help to implement following fe
     * If you run development in docker container,<br>
       you need to expose port to your host by `npm run dev -- --host`
     * To specify port: `npm run dev -- --port 1234`
-* To build static website: `npm run build`. Artifacts will be stored to `dist` folder
+* To build static website: `npm run build`. Artifacts will be stored to `docs` folder
     * To change output dir: `npm run build -- --outDir <dirname>`
 * To preview built static website: `npm run preview`
     * Similar to above, you can specify outDir, change port or expose host:<br>

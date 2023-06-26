@@ -44,6 +44,7 @@
 
   --form-element-spacing-vertical: 0.3rem;
   --form-element-spacing-horizontal: 0.7rem;
+  --typography-spacing-vertical: 1rem;
 }
 
 body {
