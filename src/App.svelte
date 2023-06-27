@@ -16,9 +16,11 @@
 	let separateStep = 3;
 	let sequenceSeparator = ' ';
 	let separators = [
-		{id: ' ', text: "Space"},
+		{id: " ", text: "Space"},
 		{id: "'", text: "Apostrophe"},
 	]
+	// match any separator or space character
+	let regexpNormalizeGuess = new RegExp(separators.map(x => x.id).join("|") + '|\\s', 'g')
 
 	let targetSeq;
 	generateSequence();
@@ -74,12 +76,11 @@
 		
 		let inputGuess = document.getElementById('input-guess');
 
-		// forbid input field to accept non-digits except for separator
-		let guessInt = guess.replace(/\D/g, '');  // remove non-digit characters
+		let guessNorm = guess.replace(regexpNormalizeGuess, '');  // remove space characters
 		
-		console.log("Check guess ", guess, " to be equal to target ", targetSeqCopy)
+		console.log("Check guess ", guessNorm, " to be equal to target ", targetSeqCopy)
 		
-		if (guessInt === targetSeqCopy){
+		if (guessNorm === targetSeqCopy){
 			resultText = 'Correct';
 			nCorrect += 1;
 			solved = true;
@@ -120,11 +121,11 @@
 	}
 
 	let modes = [
-		{id: "int", text: "Number"},
+		{id: "custom", text: "Custom"},
 		{id: "passport", text: "Passport"},
 		{id: "iban", text: "IBAN"},
 	]
-	let selectedMode = 'int';
+	let selectedMode = 'custom';
 
 	function changeMode() {
 
@@ -138,7 +139,6 @@
 
 <div id="appForm">
 	<div id="controls">
-			<!-- TODO: poorly displayed -->
 		<p id="scoreCounter">Correct: {nCorrect}. Mistakes: {nMistakes}</p>
 		
 		<details id="detailsAccordion">
@@ -160,7 +160,7 @@
 			</label>
 
 			<div id="controlGroupSeparator">
-					
+
 				<label id="controlSeparator">Separator
 					<select disabled={!toSeparateSeq} bind:value={sequenceSeparator} on:change={reseparateSequence}>
 						{#each separators as sep}
@@ -240,6 +240,14 @@
 		gap: 1rem;
 		justify-content: space-between;
 		align-items: start;
+	}
+
+	#controlSeparator {
+		max-width: 200px;
+	}
+
+	#controlSeparatorStep > input {
+		margin-top: 0.75rem;
 	}
 
 	#taskDescription {
