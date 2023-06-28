@@ -2,14 +2,14 @@
     import { tick } from "svelte";
 	import ThemeSwitcher from "./lib/ThemeSwitcher.svelte";
 	
-	let numberLength = 6;
+	let numberLength = 8;
 	let toAddNumbers = true;
 	let toAddLetters = false;
 	let lettersMinPercent = 30;
 	let lettersMaxPercent = 30;
 	
 	let toSeparateSeq = true;
-	let separateStep = 3;
+	let separateStep = 4;
 	let sequenceSeparator = " ";
 	let separators = [
 		{id: " ", text: "Space"},
@@ -121,8 +121,6 @@
 			visibleGuess = false;
 			visibleTask = true;
 		}
-
-		// TODO: paragraphStatus is visible when it should be not
 	}
 
 	function showAnswer() {
@@ -136,13 +134,18 @@
 	}
 
 	async function switchModes() {
-		// TODO: there are bugs with UI state when changing to a new mode
 		if (selectedMode === "rewrite") {
 			activateRewriteMode();
 		}
 		else if (selectedMode === "memorize") {
 			activateMemorizeMode();
 		}
+
+		guessInputsDisabled = false;
+		guess = "";
+
+		blockUpdatingSequence = false;
+		generateSequence();
 	}
 
 	async function activateRewriteMode() {
@@ -151,13 +154,16 @@
 		await tick();
 
 		let mainCard = document.getElementById("mainCard");
-		mainCard.style.height = "400px";
+		mainCard.style.height = "350px";
 		mainCard.style.justifyContent = "space-between";
 
 		// hide nodes
 		document.getElementById("buttonReady").style.display = "none";
 		document.getElementById("labelGuess").style.display = "none";
 		document.getElementById("buttonShowAnswer").style.display = "none";
+
+		toggleStatusVisibility(false);
+		document.getElementById("inputGuess").removeAttribute("aria-invalid");
 	}
 
 	async function activateMemorizeMode() {
@@ -170,6 +176,12 @@
 		mainCard.style.justifyContent = "center";
 		
 		document.getElementById("buttonReady").style.display = "";
+	}
+
+	function inputGuessOnInput() {
+		toggleStatusVisibility(false);
+		document.getElementById("inputGuess").removeAttribute("aria-invalid");
+		document.getElementById("inputGuess").removeAttribute("aria-invalid");
 	}
 
 	switchModes();
@@ -265,7 +277,7 @@
 		{#if visibleGuess}
 			<div id="guess">
 				<label id="labelGuess" for="inputGuess">Your guess</label>
-				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={() => toggleStatusVisibility(false)}/>
+				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 				<div id="guessButtonRow">
 				<button id="buttonRestart" class="contrast outline" on:click={restart}>Restart</button>	
 				<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>Show Answer</button>	
@@ -302,6 +314,21 @@
 		margin-bottom: 1rem;
 		border: none;
 	}
+
+	/* `#controls *` allows to ovveride default pico-css selector for select. Thus we can modify font-size. */
+	#controls * {
+		font-size: 0.8rem;
+	}
+
+	/* We can't use `#controlsSummary` as selector, 
+	because it has lower priority than `#controls > summary` (?) 
+	and gets overridden by other selector. Font size gets wrong.
+	*/
+	#controls > summary {
+		font-size: 1rem;
+	}
+
+	/* Now we can use simple id as `#controlsSummary` a selector */
 	#controlsSummary {
 		width: clamp(90px, 20%, 20%);
 	}
@@ -321,10 +348,10 @@
 		align-items: start;
 	}
 
-	#inputSeparator {
-		max-width: 200px;
+	.divFlexHorizontal > * {
+		flex: 1;
 	}
-
+	
 	#inputSeparatorStep > input {
 		margin-top: 0.75rem;
 	}
@@ -334,7 +361,7 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: stretch;
-		height: 400px;
+		height: 350px;
 		margin-top: 0;
 	}
 
@@ -347,6 +374,7 @@
 		width: 30%;
 		align-self: center;
 	}
+
 	#guessButtonRow {
 		display: flex;
 		gap: 0.5rem;
