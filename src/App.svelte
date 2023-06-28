@@ -1,33 +1,46 @@
 <script>
+    import { tick } from "svelte";
 	import ThemeSwitcher from "./lib/ThemeSwitcher.svelte";
-
-	let visibleTask = true;
-	let visibleGuess = false;
-	
-	let guess = '';
-	let resultText = 'default';  // default value not to leave <p> tag blank and to occupy space in layout
-	let solved = false;
-	let nCorrect = 0;
-	let nMistakes = 0;
 	
 	let numberLength = 6;
+	let toAddNumbers = true;
+	let toAddLetters = false;
+	let lettersMinPercent = 30;
+	let lettersMaxPercent = 30;
 	
 	let toSeparateSeq = true;
 	let separateStep = 3;
-	let sequenceSeparator = ' ';
+	let sequenceSeparator = " ";
 	let separators = [
 		{id: " ", text: "Space"},
 		{id: "'", text: "Apostrophe"},
 	]
 	// match any separator or space character
-	let regexpNormalizeGuess = new RegExp(separators.map(x => x.id).join("|") + '|\\s', 'g')
+	let regexpNormalizeGuess = new RegExp(separators.map(x => x.id).join("|") + "|\\s", "g")
 
+	let blockUpdatingSequence = false;
 	let targetSeq;
 	generateSequence();
 	$: targetSeqSeparated = separateSequence(targetSeq);
-	
-	let targetSeqCopy;
-	let targetSeqSeparatedCopy;
+
+	let formats = [
+		{id: "custom", text: "Custom"},
+		{id: "iban", text: "IBAN"},
+		{id: "swift", text: "Swift"},
+	]
+	let selectedFormat = "custom";
+
+	let selectedMode = "rewrite";
+	let taskDescription;
+	$: taskDescription = selectedMode === "rewrite" ? "Rewrite" : "Memorize";
+	let visibleTask = true;
+	let visibleGuess = true;
+
+	let guess = "";
+	let statusText = "default";  // default value not to leave <p> tag blank and to occupy space in layout
+	let guessInputsDisabled = false;
+	let nCorrect = 0;
+	let nMistakes = 0;
 
 	function randIntUniform(length){
 		// low is inclusive, high is exclusive
@@ -56,80 +69,110 @@
 	}
 
 	function generateSequence() {
-		targetSeq = randIntUniform(numberLength);
+		if (!blockUpdatingSequence) {
+			targetSeq = randIntUniform(numberLength);
+		}
 	}
-	function reseparateSequence() {
-		targetSeqSeparated = separateSequence(targetSeq);
+
+	function separateTargetSequence() {
+		if (!blockUpdatingSequence) {
+			targetSeqSeparated = separateSequence(targetSeq);
+		}
 	}
 	
 	function readyToGuess() {
+		blockUpdatingSequence = true;  // prevent modifying target sequence with controls while in guess mode
+
 		visibleTask = false;
 		visibleGuess = true;
-
-		// we store target sequence in a copy to allow user to adjust setting while guessing current sequence
-		targetSeqCopy = targetSeq;
-		targetSeqSeparatedCopy = targetSeqSeparated;
 	}
-	function checkGuess() {
-		let paragraphResult = document.getElementById('paragraphResult');
-		paragraphResult.style.visibility = "visible";
-		
-		let inputGuess = document.getElementById('input-guess');
 
-		let guessNorm = guess.replace(regexpNormalizeGuess, '');  // remove space characters
+	function checkGuess() {
+		let guessNorm = guess.replace(regexpNormalizeGuess, "");  // remove space characters
+		console.log("Check guess ", guessNorm, " to be equal to target ", targetSeq)
 		
-		console.log("Check guess ", guessNorm, " to be equal to target ", targetSeqCopy)
-		
-		if (guessNorm === targetSeqCopy){
-			resultText = 'Correct';
+		if (guessNorm === targetSeq){
+			statusText = "Correct";
 			nCorrect += 1;
-			solved = true;
-			inputGuess.setAttribute('aria-invalid', 'false');
-			inputGuess.readOnly = true;
+			document.getElementById("inputGuess").setAttribute("aria-invalid", "false");
+			guessInputsDisabled = true;
 		}
 		else{
-			resultText = 'Mistake';
+			statusText = "Mistake";
 			nMistakes += 1;
-			inputGuess.setAttribute('aria-invalid', 'true');
+			document.getElementById("inputGuess").setAttribute("aria-invalid", "true");
 		}
+		toggleStatusVisibility(true);
 	}
-	function hideResult() {
-		let paragraphResult = document.getElementById('paragraphResult');
-		paragraphResult.style.visibility = "hidden";
+
+	function toggleStatusVisibility(toShow) {
+		let paragraphStatus = document.getElementById("paragraphStatus");
+		paragraphStatus.style.visibility = toShow ? "visible" : "hidden";
 	}
 	
 	function restart() {
+		guess = "";
+		guessInputsDisabled = false;
+		
+		blockUpdatingSequence = false;  // allow modifying targetSequence
 		generateSequence();
-		visibleGuess = false;
-		visibleTask = true;
-		guess = '';
-		solved = false;
 
-		let paragraphResult = document.getElementById('paragraphResult');
-		paragraphResult.style.visibility = "hidden";
+		if (selectedMode === "memorize"){
+			visibleGuess = false;
+			visibleTask = true;
+		}
+
+		// TODO: paragraphStatus is visible when it should be not
 	}
 
 	function showAnswer() {
-		resultText = targetSeqSeparatedCopy;
-		solved = true;
-
-		let inputGuess = document.getElementById('input-guess');
-		inputGuess.readOnly = true;
-
-		let paragraphResult = document.getElementById('paragraphResult');
-		paragraphResult.style.visibility = "visible";
+		guessInputsDisabled = true;
+		statusText = targetSeqSeparated;
+		toggleStatusVisibility(true);
 	}
 
-	let modes = [
-		{id: "custom", text: "Custom"},
-		{id: "passport", text: "Passport"},
-		{id: "iban", text: "IBAN"},
-	]
-	let selectedMode = 'custom';
-
-	function changeMode() {
+	function changeFormat() {
 
 	}
+
+	async function switchModes() {
+		// TODO: there are bugs with UI state when changing to a new mode
+		if (selectedMode === "rewrite") {
+			activateRewriteMode();
+		}
+		else if (selectedMode === "memorize") {
+			activateMemorizeMode();
+		}
+	}
+
+	async function activateRewriteMode() {
+		visibleTask = true;
+		visibleGuess = true;
+		await tick();
+
+		let mainCard = document.getElementById("mainCard");
+		mainCard.style.height = "400px";
+		mainCard.style.justifyContent = "space-between";
+
+		// hide nodes
+		document.getElementById("buttonReady").style.display = "none";
+		document.getElementById("labelGuess").style.display = "none";
+		document.getElementById("buttonShowAnswer").style.display = "none";
+	}
+
+	async function activateMemorizeMode() {
+		visibleTask = true;
+		visibleGuess = false;
+		await tick()
+		
+		let mainCard = document.getElementById("mainCard");
+		mainCard.style.height = "250px";
+		mainCard.style.justifyContent = "center";
+		
+		document.getElementById("buttonReady").style.display = "";
+	}
+
+	switchModes();
 </script>
 
 <hgroup id="header">
@@ -138,62 +181,98 @@
 </hgroup>
 
 <div id="appForm">
-	<div id="controls">
-		<p id="scoreCounter">Correct: {nCorrect}. Mistakes: {nMistakes}</p>
+	
+	<p id="paragraphScore">Correct: {nCorrect}. Mistakes: {nMistakes}</p>
+
+	<details id="controls">
+		<summary id="controlsSummary">Settings</summary>
+
+		<div class="divFlexHorizontal">
+			<label class="flex-1">Format
+				<select bind:value={selectedFormat} on:change={changeFormat}>
+					{#each formats as format}
+						<option value={format.id}>{format.text}</option>
+					{/each}
+				</select>
+			</label>
+
+			<label class="flex-1">Mode
+				<select bind:value={selectedMode} on:change={switchModes}>
+					<option value="rewrite">Rewrite</option>
+					<option value="memorize">Memorize</option>
+				</select>
+			</label>
+		</div>
+
+		<label id="controlLength">Sequence length: {numberLength}
+			<input type="range" min=4 max=20 bind:value={numberLength} on:input={generateSequence}>
+		</label>
+
+		<div class="divFlexHorizontal">
+			<label class="flex-1">
+				<!-- on:change={} -->
+				<input type="checkbox" role="switch" bind:checked={toAddNumbers}>
+				Add numbers
+			</label>
+
+			<label class="flex-1">
+				<!-- on:change={} -->
+				<input type="checkbox" role="switch" bind:checked={toAddLetters}>
+				Add letters
+			</label>
+		</div>
+
+		<div class="divFlexHorizontal">
+			<!-- on:input={reseparateSequence} -->
+			<label class="max-width-250px">Min letters: {lettersMinPercent}%
+				<input type="range" min=0 max=100 step=10 bind:value={lettersMinPercent} disabled={!toAddLetters || !toAddNumbers}>
+			</label>
+
+			<label class="max-width-250px">Max letters: {lettersMaxPercent}%
+				<input type="range" min=0 max=100 step=10 bind:value={lettersMaxPercent} disabled={!toAddLetters || !toAddNumbers}>
+			</label>
+		</div>
 		
-		<details id="detailsAccordion">
-			<summary id="detailsAccordionSummary">Settings</summary>
+		<label>
+			<input type="checkbox" role="switch" bind:checked={toSeparateSeq} on:change={separateTargetSequence}>
+			Separate sequence
+		</label>
 
-			<select id="selectMode" bind:value={selectedMode} on:change={changeMode}>
-				{#each modes as mode}
-					<option value={mode.id}>{mode.text}</option>
-				{/each}
-			</select>
-
-			<label id="controlLength">Sequence length: {numberLength}
-				<input type="range" min=4 max=20 bind:value={numberLength} on:input={generateSequence}>
+		<div class="divFlexHorizontal">
+			<label id="inputSeparator">Separator
+				<select disabled={!toSeparateSeq} bind:value={sequenceSeparator} on:change={separateTargetSequence}>
+					{#each separators as sep}
+						<option value={sep.id}>{sep.text}</option>
+					{/each}
+				</select>
 			</label>
 			
-			<label>
-				<input type="checkbox" role="switch" bind:checked={toSeparateSeq} on:change={reseparateSequence}>
-				Separate sequence
+			<label id="inputSeparatorStep">Step: {separateStep}
+				<input type="range" min=2 max=5 disabled={!toSeparateSeq} bind:value={separateStep} on:input={separateTargetSequence}>
 			</label>
+		</div>
 
-			<div id="controlGroupSeparator">
+	</details>		
 
-				<label id="controlSeparator">Separator
-					<select disabled={!toSeparateSeq} bind:value={sequenceSeparator} on:change={reseparateSequence}>
-						{#each separators as sep}
-							<option value={sep.id}>{sep.text}</option>
-						{/each}
-					</select>
-				</label>
-				
-				<label id="controlSeparatorStep">Step: {separateStep}
-					<input type="range" min=2 max=5 disabled={!toSeparateSeq} bind:value={separateStep} on:input={reseparateSequence}>
-				</label>
-		
-
-			</div>
-		</details>		
-	</div>
-	
-	<article id="taskDescription">
+	<article id="mainCard">
 		{#if visibleTask}
-			<p>Number: <strong>{targetSeqSeparated}</strong></p>
-			<button id="buttonReady" on:click={readyToGuess}>Ready</button>
+			<div id="task">
+				<p>{taskDescription}<br><strong>{targetSeqSeparated}</strong></p>
+				<button id="buttonReady" on:click={readyToGuess}>Ready</button>
+			</div>
 		{/if}
 
 		{#if visibleGuess}
-			<label for='input-guess'>Your guess</label>
-			<!-- TODO: restrict input to numbers and separators only -->
-			<input type='text' id='input-guess' bind:value={guess} on:input={() => hideResult()}/>
-			<div id="guessButtonRow">
-				<button id='button-restart' class='contrast outline' on:click={restart}>Restart</button>	
-				<button id='button-show-answer' class='contrast outline' on:click={showAnswer} disabled={solved}>Show Answer</button>	
-				<button id='button-check' on:click={checkGuess} disabled={solved}>Check</button>
+			<div id="guess">
+				<label id="labelGuess" for="inputGuess">Your guess</label>
+				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={() => toggleStatusVisibility(false)}/>
+				<div id="guessButtonRow">
+				<button id="buttonRestart" class="contrast outline" on:click={restart}>Restart</button>	
+				<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>Show Answer</button>	
+				<button id="buttonCheck" on:click={checkGuess} disabled={guessInputsDisabled}>Check</button>
 			</div>
-			<p id="paragraphResult">{resultText}</p>
+			<p id="paragraphStatus">{statusText}</p>
+			</div>
 	{/if}
 	</article>
 </div>
@@ -203,7 +282,7 @@
 
 	<!-- TODO: not visible on default startup screen -->
 	<a href="https://github.com/navalnica/akr" target="_blank" rel="noreferrer">
-		<i class="fa-brands fa-github" style='font-size:18px'></i> GitHub
+		<i class="fa-brands fa-github" style="font-size:18px"></i> GitHub
 	</a>
 </div>
 
@@ -212,51 +291,56 @@
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
+		gap: 1rem;
 	}
 
-	#controls {
-		display: flex;
-		flex-direction: column;
-		gap: 1em;
-	}
-
-	#selectMode {
-		flex: 1;
-	}
-	#scoreCounter {
+	#paragraphScore {
 		text-align: left;
 	}
 
-	#detailsAccordion {
+	#controls {
 		margin-bottom: 1rem;
 		border: none;
 	}
-	#detailsAccordionSummary {
+	#controlsSummary {
 		width: clamp(90px, 20%, 20%);
 	}
 
-	#controlGroupSeparator {
+	.flex-1 {
+		flex: 1;
+	}
+
+	.max-width-250px {
+		max-width: 250px;
+	}
+
+	.divFlexHorizontal {
 		display: flex;
 		gap: 1rem;
 		justify-content: space-between;
 		align-items: start;
 	}
 
-	#controlSeparator {
+	#inputSeparator {
 		max-width: 200px;
 	}
 
-	#controlSeparatorStep > input {
+	#inputSeparatorStep > input {
 		margin-top: 0.75rem;
 	}
 
-	#taskDescription {
+	#mainCard {
 		display: flex;
 		flex-direction: column;
 		justify-content: center;
 		align-items: stretch;
-		height: 250px;
+		height: 400px;
 		margin-top: 0;
+	}
+
+	#task {
+		display: flex;
+		flex-direction: column;
 	}
 
 	#buttonReady {
@@ -271,7 +355,7 @@
 	#guessButtonRow > button {
 		flex: 1;
 	}
-	#paragraphResult {
+	#paragraphStatus {
 		visibility: hidden;
 	}
 
@@ -279,7 +363,7 @@
 		text-align: left;
 	}
 
-	input[type='range'] {
+	input[type="range"] {
 		margin-bottom: calc(var(--spacing) * .25);
 	}
 
