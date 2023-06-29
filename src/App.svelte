@@ -1,12 +1,32 @@
 <script>
     import { tick } from "svelte";
 	import ThemeSwitcher from "./lib/ThemeSwitcher.svelte";
+
+
+	// ***** state ***** //
+
+	let digits = "0123456789";
+	let allowedLetters = "ABCDEFGHIJKLMNPQRSTUVWXYZ";  // don't include "O" since it may be confused with 0
 	
-	let numberLength = 8;
-	let toAddNumbers = true;
-	let toAddLetters = false;
-	let lettersMinPercent = 30;
-	let lettersMaxPercent = 30;
+	// if you change this value,
+	// you MUST change "max" value of "inputLettersMin" and "inputLettersMax" sliders.
+	// look how letters variables are used for details.
+	let sequenceLength = 8;
+
+	// Letters variables.
+	//
+	// we want to preserver letters/sequenceLength ratio.
+	// by separating letters variables into display and calculation variables,
+	// we eliminate slider jitter when sequence length gets updated.
+	//
+	// variables used to display
+	let lettersMinDisplay = 0;
+	let lettersMaxDisplay = 0;
+	// variables used in calculations
+	let lettersMin = 0;
+	let lettersMax = 0;
+	let lettersMinFrac = 0;
+	let lettersMaxFrac = 0;
 	
 	let toSeparateSeq = true;
 	let separateStep = 4;
@@ -42,12 +62,63 @@
 	let nCorrect = 0;
 	let nMistakes = 0;
 
-	function randIntUniform(length){
+	switchModes();
+
+	// ***** functions ***** //
+
+	function randIntUniform(low, high){
 		// low is inclusive, high is exclusive
-		let low = 10 ** (length - 1);
-		let high = 10 ** length;
-		let num = Math.floor(Math.random() * (high - low) + low);
-		return num.toString();
+		return Math.floor(Math.random() * (high - low) + low);
+	}
+
+	function randomChoice(array) {
+		var ix = Math.floor(Math.random() * array.length);
+		return array[ix];
+	}
+
+	function randomChoiceMultiple(array, nChoices) {
+		// random choice with repetitions
+		let choices = [];
+		for (let i = 0; i < nChoices; ++i){
+			choices.push(randomChoice(array));
+		}
+		return choices;
+	}
+
+	function shuffleArrayInplace(arr) {
+		// Fisher-Yates inplace shuffle. O(n) complexity.
+		// https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
+		for (let i = arr.length - 1; i > 0; --i){
+			const j = Math.floor(Math.random() * (i + 1));
+			const tmp = arr[i];
+			arr[i] = arr[j];
+			arr[j] = tmp;
+		}
+	}
+
+	function generateSequence() {
+		if (!blockUpdatingSequence) {
+			let nDigits = 0;
+			let nLetters = 0;
+
+			if (lettersMax === 0){
+				nDigits = sequenceLength;
+				nLetters = 0;
+			} else if (lettersMin === sequenceLength){
+				nDigits = 0;
+				nLetters = sequenceLength;
+			} else {
+				nLetters = randIntUniform(lettersMin, lettersMax + 1);
+				nDigits = sequenceLength - nLetters;
+			}
+
+			let digitsArr = randomChoiceMultiple(digits, nDigits);
+			let lettersArr = randomChoiceMultiple(allowedLetters, nLetters);
+			let seq = digitsArr.concat(lettersArr);
+			shuffleArrayInplace(seq);
+
+			targetSeq = seq.join("");
+		}
 	}
 
 	function separateSequence(sequence) {
@@ -68,12 +139,6 @@
 		return arr.reverse().join(sequenceSeparator); 
 	}
 
-	function generateSequence() {
-		if (!blockUpdatingSequence) {
-			targetSeq = randIntUniform(numberLength);
-		}
-	}
-
 	function separateTargetSequence() {
 		if (!blockUpdatingSequence) {
 			targetSeqSeparated = separateSequence(targetSeq);
@@ -89,6 +154,8 @@
 
 	function checkGuess() {
 		let guessNorm = guess.replace(regexpNormalizeGuess, "");  // remove space characters
+		guessNorm = guessNorm.toUpperCase();
+
 		console.log("Check guess ", guessNorm, " to be equal to target ", targetSeq)
 		
 		if (guessNorm === targetSeq){
@@ -184,7 +251,69 @@
 		document.getElementById("inputGuess").removeAttribute("aria-invalid");
 	}
 
-	switchModes();
+	function seqLenOnInput() {
+		// calculate letters variables from updated sequence length and previous letters/seqLen ratio.
+
+		lettersMin = Math.round(lettersMinFrac * sequenceLength);
+		if (lettersMinFrac > 0 && lettersMin === 0){
+			lettersMin = 1;
+		}
+		if (lettersMinFrac < 1 && lettersMin === sequenceLength){
+			lettersMin--;
+		}
+
+		lettersMax = Math.round(lettersMaxFrac * sequenceLength);
+		if (lettersMaxFrac > 0 && lettersMax === 0){
+			lettersMax = 1;
+		}
+		if (lettersMaxFrac < 1 && lettersMax === sequenceLength){
+			lettersMax--;
+		}
+		
+		generateSequence();
+	}
+
+	function seqLenOnChange() {
+		// update min, max sliders for letters count.
+		// actual letter values used in calculcations were updated previously (on input),
+		// we update sliders in the very end (when mouse is released) to avoid sliders jitter.
+		lettersMinDisplay = lettersMin;
+		lettersMaxDisplay = lettersMax;
+		document.getElementById("inputLettersMin").max = sequenceLength;
+		document.getElementById("inputLettersMax").max = sequenceLength;
+	}
+
+	function lettersMinOnInput() {
+		lettersMaxDisplay = Math.max(lettersMinDisplay, lettersMaxDisplay);
+		lettersMinDisplay = Math.min(lettersMinDisplay, lettersMaxDisplay);
+
+		// sliders are bound to display variables. copy their value to variables used in calculations.
+		lettersMin = lettersMinDisplay;
+		lettersMax = lettersMaxDisplay;
+
+		// now we can generate a new sequence
+		generateSequence();
+
+		// recalculate ratio
+		lettersMinFrac = lettersMin / sequenceLength;
+		lettersMaxFrac = lettersMax / sequenceLength;
+	}
+
+	function lettersMaxOnInput() {
+		lettersMinDisplay = Math.min(lettersMinDisplay, lettersMaxDisplay);
+		lettersMaxDisplay = Math.max(lettersMinDisplay, lettersMaxDisplay);
+
+		// sliders are bound to display variables. copy their value to variables used in calculations.
+		lettersMin = lettersMinDisplay;
+		lettersMax = lettersMaxDisplay;
+		
+		// now we can generate a new sequence
+		generateSequence();
+
+		// recalculate ratio
+		lettersMinFrac = lettersMin / sequenceLength;
+		lettersMaxFrac = lettersMax / sequenceLength;
+	}
 </script>
 
 <hgroup id="header">
@@ -217,32 +346,17 @@
 			</label>
 		</div>
 
-		<label id="controlLength">Sequence length: {numberLength}
-			<input type="range" min=4 max=20 bind:value={numberLength} on:input={generateSequence}>
+		<label>Sequence length: {sequenceLength}
+			<input type="range" min=4 max=20 bind:value={sequenceLength} on:input={seqLenOnInput} on:change={seqLenOnChange}>
 		</label>
 
 		<div class="divFlexHorizontal">
-			<label class="flex-1">
-				<!-- on:change={} -->
-				<input type="checkbox" role="switch" bind:checked={toAddNumbers}>
-				Add numbers
+			<label class="max-width-250px">Min letters: {lettersMin}
+				<input id="inputLettersMin" type="range" min=0 max=8 step=1 bind:value={lettersMinDisplay} on:input={lettersMinOnInput}>
 			</label>
 
-			<label class="flex-1">
-				<!-- on:change={} -->
-				<input type="checkbox" role="switch" bind:checked={toAddLetters}>
-				Add letters
-			</label>
-		</div>
-
-		<div class="divFlexHorizontal">
-			<!-- on:input={reseparateSequence} -->
-			<label class="max-width-250px">Min letters: {lettersMinPercent}%
-				<input type="range" min=0 max=100 step=10 bind:value={lettersMinPercent} disabled={!toAddLetters || !toAddNumbers}>
-			</label>
-
-			<label class="max-width-250px">Max letters: {lettersMaxPercent}%
-				<input type="range" min=0 max=100 step=10 bind:value={lettersMaxPercent} disabled={!toAddLetters || !toAddNumbers}>
+			<label class="max-width-250px">Max letters: {lettersMax}
+				<input id="inputLettersMax" type="range" min=0 max=8 step=1 bind:value={lettersMaxDisplay} on:input={lettersMaxOnInput}>
 			</label>
 		</div>
 		
