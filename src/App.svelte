@@ -1,6 +1,7 @@
 <script>
     import { tick } from "svelte";
 	import ThemeSwitcher from "./lib/ThemeSwitcher.svelte";
+	import { swiftCodes } from "./lib/SwiftCodes"
 
 
 	// ***** state ***** //
@@ -38,21 +39,28 @@
 	// match any separator or space character
 	let regexpNormalizeGuess = new RegExp(separators.map(x => x.id).join("|") + "|\\s", "g")
 
+	let modes = {
+		rewrite: "Rewrite",
+		memorize: "Memorize"
+	}
+	let selectedMode = "rewrite";
+
+	let formats = {
+		custom: "Custom",
+		iban: "IBAN",
+		swift: "SWIFT",
+	}
+	let selectedFormat = "custom";
+
+	let customSequenceControlsBlocked;
+	$: customSequenceControlsBlocked = (selectedFormat !== "custom");
+	$: separateSequenceControlsBlocked = (selectedFormat === "swift");
+
 	let blockUpdatingSequence = false;
 	let targetSeq;
 	generateSequence();
 	$: targetSeqSeparated = separateSequence(targetSeq);
 
-	let formats = [
-		{id: "custom", text: "Custom"},
-		{id: "iban", text: "IBAN"},
-		{id: "swift", text: "Swift"},
-	]
-	let selectedFormat = "custom";
-
-	let selectedMode = "rewrite";
-	let taskDescription;
-	$: taskDescription = selectedMode === "rewrite" ? "Rewrite" : "Memorize";
 	let visibleTask = true;
 	let visibleGuess = true;
 
@@ -61,6 +69,8 @@
 	let guessInputsDisabled = false;
 	let nCorrect = 0;
 	let nMistakes = 0;
+
+	console.log(`loaded ${swiftCodes.length} swift codes. sample codes: ${randomChoiceMultiple(swiftCodes, 5)}`);
 
 	activateLayoutFromSelectedMode();
 
@@ -110,7 +120,11 @@
 	}
 
 	function generateSequence() {
-		if (!blockUpdatingSequence) {
+		if (blockUpdatingSequence) {
+			return;
+		}
+
+		if (selectedFormat === "custom") {
 			let nDigits = 0;
 			let nLetters = 0;
 
@@ -131,6 +145,12 @@
 			shuffleArrayInplace(seq);
 
 			targetSeq = seq.join("");
+		}
+		else if (selectedFormat === "swift"){
+			targetSeq = randomChoice(swiftCodes);
+		}
+		else if (selectedFormat === "iban") {
+			targetSeq = "IBAN is not supported yet";
 		}
 	}
 
@@ -197,7 +217,17 @@
 	}
 
 	function changeFormat() {
+		if (selectedFormat === "custom") {
+			toSeparateSeq = true;
+		}
+		else if (selectedFormat === "iban") {
 
+		}
+		else if (selectedFormat === "swift"){
+			toSeparateSeq = false;
+		}
+
+		buttonRestartOnClick();
 	}
 	
 	function buttonRestartOnClick() {
@@ -336,13 +366,15 @@
 </script>
 
 <hgroup id="header">
-	<h2>OCD fighter</h2>
+	<h2>OCD fighter 🔥</h2>
 	<h3>Fight Obsessive–compulsive disorder by solving simple tasks</h3>
 </hgroup>
 
 <div id="appForm">
 	
-	<p id="paragraphScore">Correct: {nCorrect}. Mistakes: {nMistakes}</p>
+	<p id="paragraphScore">✅ Correct: {nCorrect}. 🙄 Mistakes: {nMistakes}</p>
+
+	<p id="modeAndFormatStatus">Mode: {modes[selectedMode]} {formats[selectedFormat]} sequence</p>
 
 	<details id="controls">
 		<!-- TODO: width of details container varies depending on the open status -->
@@ -351,42 +383,52 @@
 		<div class="divFlexHorizontal">
 			<label class="flex-1">Format
 				<select bind:value={selectedFormat} on:change={changeFormat}>
-					{#each formats as format}
-						<option value={format.id}>{format.text}</option>
+					{#each Object.keys(formats) as key}
+						<option value={key}>{formats[key]}</option>
 					{/each}
 				</select>
 			</label>
 
 			<label class="flex-1">Mode
 				<select bind:value={selectedMode} on:change={selectModeOnChange}>
-					<option value="rewrite">Rewrite</option>
-					<option value="memorize">Memorize</option>
+					{#each Object.keys(modes) as key}
+						<option value={key}>{modes[key]}</option>
+					{/each}
 				</select>
 			</label>
 		</div>
 
 		<label>Sequence length: {sequenceLength}
-			<input type="range" min=4 max=20 bind:value={sequenceLength} on:input={seqLenOnInput} on:change={seqLenOnChange}>
+			<input type="range" min=4 max=20 bind:value={sequenceLength} 
+			 on:input={seqLenOnInput} on:change={seqLenOnChange} disabled={customSequenceControlsBlocked}
+			>
 		</label>
 
 		<div class="divFlexHorizontal">
 			<label class="max-width-250px">Min letters: {lettersMin}
-				<input id="inputLettersMin" type="range" min=0 max=8 step=1 bind:value={lettersMinDisplay} on:input={lettersMinOnInput}>
+				<input id="inputLettersMin" type="range" min=0 max=8 step=1 bind:value={lettersMinDisplay} 
+				 on:input={lettersMinOnInput} disabled={customSequenceControlsBlocked}
+				>
 			</label>
 
 			<label class="max-width-250px">Max letters: {lettersMax}
-				<input id="inputLettersMax" type="range" min=0 max=8 step=1 bind:value={lettersMaxDisplay} on:input={lettersMaxOnInput}>
+				<input id="inputLettersMax" type="range" min=0 max=8 step=1 bind:value={lettersMaxDisplay}
+				 on:input={lettersMaxOnInput} disabled={customSequenceControlsBlocked}>
 			</label>
 		</div>
 		
 		<label>
-			<input type="checkbox" role="switch" bind:checked={toSeparateSeq} on:change={separateTargetSequence}>
+			<input type="checkbox" role="switch" bind:checked={toSeparateSeq}
+			 on:change={separateTargetSequence} disabled={separateSequenceControlsBlocked}
+			>
 			Separate sequence
 		</label>
 
 		<div class="divFlexHorizontal">
 			<label id="inputSeparator">Separator
-				<select disabled={!toSeparateSeq} bind:value={sequenceSeparator} on:change={separateTargetSequence}>
+				<select disabled={!toSeparateSeq || separateSequenceControlsBlocked}
+				 bind:value={sequenceSeparator} on:change={separateTargetSequence}
+				>
 					{#each separators as sep}
 						<option value={sep.id}>{sep.text}</option>
 					{/each}
@@ -394,7 +436,9 @@
 			</label>
 			
 			<label id="inputSeparatorStep">Step: {separateStep}
-				<input type="range" min=2 max=5 disabled={!toSeparateSeq} bind:value={separateStep} on:input={separateTargetSequence}>
+				<input type="range" min=2 max=5 disabled={!toSeparateSeq || separateSequenceControlsBlocked}
+				 bind:value={separateStep} on:input={separateTargetSequence}
+				>
 			</label>
 		</div>
 
@@ -403,7 +447,7 @@
 	<article id="mainCard">
 		{#if visibleTask}
 			<div id="task">
-				<p>{taskDescription}<br><strong>{targetSeqSeparated}</strong></p>
+				<p>{modes[selectedMode]}<br><strong>{targetSeqSeparated}</strong></p>
 				<button id="buttonReady" on:click={readyToGuess}>Ready</button>
 			</div>
 		{/if}
@@ -439,10 +483,13 @@
 		display: flex;
 		flex-direction: column;
 		align-items: stretch;
-		gap: 1rem;
+		gap: 0.5rem;
 	}
 
 	#paragraphScore {
+		text-align: left;
+	}
+	#modeAndFormatStatus {
 		text-align: left;
 	}
 

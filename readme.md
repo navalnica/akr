@@ -10,9 +10,7 @@ You can try it yourself here: [navalnica.github.io/akr](https://navalnica.github
 ## Features to add
 The project is in development. You are welcome to help to implement following features!
 
-* Switching between several modes:
-  * IBAN
-  * passport number
+* Add IBAN format
 * translate into Belarusian
 * fix layout jitter when opening setting. probably use `display: grid` instead of flexboxes
 
@@ -21,6 +19,10 @@ The project is in development. You are welcome to help to implement following fe
 * [Vite](https://vitejs.dev/) - to build Svelte app into a static web-site (html + css + js)
 * [Pico.css](https://vitejs.dev/) - for styling, especially for out-of-the-box light/dark theme support in components
 * [Github pages](https://pages.github.com/) - to host a static web-site
+
+## Data used
+* SWIFT codes are sampled from the following dataset: [github.com/PeterNotenboom/SwiftCodes](https://github.com/PeterNotenboom/SwiftCodes).<br>
+  Notebook to reproduce data loading and sampling: [py/swift_codes_parser.ipynb](py/swift_codes_parser.ipynb)
 
 ## How to build
 * The project was built from the Vite+Svelte template
