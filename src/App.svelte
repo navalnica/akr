@@ -66,13 +66,26 @@
 
 	// ***** functions ***** //
 
+	function randomFloatCrypto() {
+		// get cryptographically strong random float in range [0; 1), 1 is exclusive.
+		// a better alternative to Math.random().
+
+		const randomBuffer = new Uint32Array(1);
+		window.crypto.getRandomValues(randomBuffer);
+
+		// (2 ** 32 - 1) or 0xffffffff (which is the same) is the max value for uint32 variable.
+		// dividing by 2 ** 32 gets random float in [0; 1) range (right border is exclusive).
+		const randomFloat = randomBuffer[0] / 2 ** 32;
+		return randomFloat;
+	}
+
 	function randIntUniform(low, high){
-		// low is inclusive, high is exclusive
-		return Math.floor(Math.random() * (high - low) + low);
+		// random integer in the range [low; high) - low is inclusive, high is exclusive
+		return Math.floor(randomFloatCrypto() * (high - low) + low);
 	}
 
 	function randomChoice(array) {
-		var ix = Math.floor(Math.random() * array.length);
+		var ix = randIntUniform(0, array.length);
 		return array[ix];
 	}
 
@@ -89,7 +102,7 @@
 		// Fisher-Yates inplace shuffle. O(n) complexity.
 		// https://en.wikipedia.org/wiki/Fisher%E2%80%93Yates_shuffle
 		for (let i = arr.length - 1; i > 0; --i){
-			const j = Math.floor(Math.random() * (i + 1));
+			const j = randIntUniform(0, i + 1);
 			const tmp = arr[i];
 			arr[i] = arr[j];
 			arr[j] = tmp;
