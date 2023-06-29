@@ -17,7 +17,7 @@ The project is in development. You are welcome to help to implement following fe
 ## Technologies used
 * [Svelte](https://svelte.dev) framework - to build reactive interface
 * [Vite](https://vitejs.dev/) - to build Svelte app into a static web-site (html + css + js)
-* [Pico.css](https://vitejs.dev/) - for styling, especially for out-of-the-box light/dark theme support in components
+* [Pico.css](https://picocss.com/) - for styling, especially for out-of-the-box light/dark theme support in components
 * [Github pages](https://pages.github.com/) - to host a static web-site
 
 ## Data used

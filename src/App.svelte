@@ -70,6 +70,9 @@
 	let nCorrect = 0;
 	let nMistakes = 0;
 
+	let taskDescription;
+	$: taskDescription = `${modes[selectedMode]} ${selectedFormat !== "custom" ? formats[selectedFormat] : "the"} ${selectedFormat === "custom" ? "sequence" : "code"}`;
+
 	console.log(`loaded ${swiftCodes.length} swift codes. sample codes: ${randomChoiceMultiple(swiftCodes, 5)}`);
 
 	activateLayoutFromSelectedMode();
@@ -374,8 +377,6 @@
 	
 	<p id="paragraphScore">✅ Correct: {nCorrect}. 🙄 Mistakes: {nMistakes}</p>
 
-	<p id="modeAndFormatStatus">Mode: {modes[selectedMode]} {formats[selectedFormat]} sequence</p>
-
 	<details id="controls">
 		<!-- TODO: width of details container varies depending on the open status -->
 		<summary id="controlsSummary">Settings</summary>
@@ -447,7 +448,8 @@
 	<article id="mainCard">
 		{#if visibleTask}
 			<div id="task">
-				<p>{modes[selectedMode]}<br><strong>{targetSeqSeparated}</strong></p>
+				<p>{taskDescription}</p>
+				<p><strong>{targetSeqSeparated}</strong></p>
 				<button id="buttonReady" on:click={readyToGuess}>Ready</button>
 			</div>
 		{/if}
@@ -487,9 +489,6 @@
 	}
 
 	#paragraphScore {
-		text-align: left;
-	}
-	#modeAndFormatStatus {
 		text-align: left;
 	}
 
