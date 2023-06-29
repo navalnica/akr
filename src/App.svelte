@@ -62,7 +62,7 @@
 	let nCorrect = 0;
 	let nMistakes = 0;
 
-	switchModes();
+	activateLayoutFromSelectedMode();
 
 	// ***** functions ***** //
 
@@ -176,19 +176,6 @@
 		let paragraphStatus = document.getElementById("paragraphStatus");
 		paragraphStatus.style.visibility = toShow ? "visible" : "hidden";
 	}
-	
-	function restart() {
-		guess = "";
-		guessInputsDisabled = false;
-		
-		blockUpdatingSequence = false;  // allow modifying targetSequence
-		generateSequence();
-
-		if (selectedMode === "memorize"){
-			visibleGuess = false;
-			visibleTask = true;
-		}
-	}
 
 	function showAnswer() {
 		guessInputsDisabled = true;
@@ -199,23 +186,42 @@
 	function changeFormat() {
 
 	}
+	
+	function buttonRestartOnClick() {
+		restartState();
 
-	async function switchModes() {
-		if (selectedMode === "rewrite") {
-			activateRewriteMode();
+		if (selectedMode === "memorize"){
+			visibleGuess = false;
+			visibleTask = true;
+		} else {
+			toggleStatusVisibility(false);
+			document.getElementById("inputGuess").removeAttribute("aria-invalid");
 		}
-		else if (selectedMode === "memorize") {
-			activateMemorizeMode();
-		}
+	}
 
-		guessInputsDisabled = false;
+	function selectModeOnChange() {
+		activateLayoutFromSelectedMode();
+		restartState();
+	}
+
+	function restartState() {
 		guess = "";
-
-		blockUpdatingSequence = false;
+		guessInputsDisabled = false;
+		
+		blockUpdatingSequence = false;  // allow modifying targetSequence
 		generateSequence();
 	}
 
-	async function activateRewriteMode() {
+	async function activateLayoutFromSelectedMode() {
+		if (selectedMode === "rewrite") {
+			activateRewriteLayout();
+		}
+		else if (selectedMode === "memorize") {
+			activateMemorizeLayout();
+		}
+	}
+
+	async function activateRewriteLayout() {
 		visibleTask = true;
 		visibleGuess = true;
 		await tick();
@@ -233,7 +239,7 @@
 		document.getElementById("inputGuess").removeAttribute("aria-invalid");
 	}
 
-	async function activateMemorizeMode() {
+	async function activateMemorizeLayout() {
 		visibleTask = true;
 		visibleGuess = false;
 		await tick()
@@ -339,7 +345,7 @@
 			</label>
 
 			<label class="flex-1">Mode
-				<select bind:value={selectedMode} on:change={switchModes}>
+				<select bind:value={selectedMode} on:change={selectModeOnChange}>
 					<option value="rewrite">Rewrite</option>
 					<option value="memorize">Memorize</option>
 				</select>
@@ -395,7 +401,7 @@
 				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 				
 				<div id="guessButtonRow">
-					<button id="buttonRestart" class="contrast outline" on:click={restart}>Restart</button>	
+					<button id="buttonRestart" class="contrast outline" on:click={buttonRestartOnClick}>Restart</button>	
 					<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>Show Answer</button>	
 					<button id="buttonCheck" on:click={checkGuess} disabled={guessInputsDisabled}>Check</button>
 				</div>

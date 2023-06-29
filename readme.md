@@ -13,12 +13,14 @@ The project is in development. You are welcome to help to implement following fe
 * Switching between several modes:
   * IBAN
   * passport number
-  * sequence
-    * sequence of letters
-    * sequence of letters & numbers
-    * probably generalize Number mode
-* Add 2 new modes: remembering & look-and-write
 * translate into Belarusian
+* fix layout jitter when opening setting. probably use `display: grid` instead of flexboxes
+
+## Technologies used
+* [Svelte](https://svelte.dev) framework - to build reactive interface
+* [Vite](https://vitejs.dev/) - to build Svelte app into a static web-site (html + css + js)
+* [Pico.css](https://vitejs.dev/) - for styling, especially for out-of-the-box light/dark theme support in components
+* [Github pages](https://pages.github.com/) - to host a static web-site
 
 ## How to build
 * The project was built from the Vite+Svelte template
