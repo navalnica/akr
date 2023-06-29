@@ -197,6 +197,7 @@
 	<p id="paragraphScore">Correct: {nCorrect}. Mistakes: {nMistakes}</p>
 
 	<details id="controls">
+		<!-- TODO: width of details container varies depending on the open status -->
 		<summary id="controlsSummary">Settings</summary>
 
 		<div class="divFlexHorizontal">
@@ -278,14 +279,16 @@
 			<div id="guess">
 				<label id="labelGuess" for="inputGuess">Your guess</label>
 				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
+				
 				<div id="guessButtonRow">
-				<button id="buttonRestart" class="contrast outline" on:click={restart}>Restart</button>	
-				<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>Show Answer</button>	
-				<button id="buttonCheck" on:click={checkGuess} disabled={guessInputsDisabled}>Check</button>
+					<button id="buttonRestart" class="contrast outline" on:click={restart}>Restart</button>	
+					<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>Show Answer</button>	
+					<button id="buttonCheck" on:click={checkGuess} disabled={guessInputsDisabled}>Check</button>
+				</div>
+				
+				<p id="paragraphStatus">{statusText}</p>
 			</div>
-			<p id="paragraphStatus">{statusText}</p>
-			</div>
-	{/if}
+		{/if}
 	</article>
 </div>
 

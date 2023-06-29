@@ -29,21 +29,25 @@
     document.documentElement.setAttribute("data-theme", themeSelected);
     
     function switchTheme() {
-        localStorage.setItem('theme', themeSelected);
-        document.documentElement.setAttribute('data-theme', themeSelected);
+        localStorage.setItem("theme", themeSelected);
+        document.documentElement.setAttribute("data-theme", themeSelected);
     }
 </script>
 
-<label id="theme-select-label" for="theme-select">
+<label id="labelThemeSelect" for="selectTheme">
     Theme: 
-    <select id="theme-select" bind:value={themeSelected} on:change={switchTheme}>
+    <select id="selectTheme" bind:value={themeSelected} on:change={switchTheme}>
         <option value="dark">Dark</option>
         <option value="light">Light</option>
     </select>
 </label>
 
 <style>
-    #theme-select {
+    #labelThemeSelect > *, #labelThemeSelect {
+        font-size: 0.9rem;
+    }
+
+    #selectTheme {
         max-width: 100px;
         padding: 5px;
         text-align: left;
