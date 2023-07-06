@@ -10,7 +10,6 @@ You can try it yourself here: [navalnica.github.io/akr](https://navalnica.github
 ## Features to add
 The project is in development. You are welcome to help to implement following features!
 
-* Add IBAN format
 * translate into Belarusian
 * fix layout jitter when opening setting. probably use `display: grid` instead of flexboxes
 
@@ -23,6 +22,7 @@ The project is in development. You are welcome to help to implement following fe
 ## Data used
 * SWIFT codes are sampled from the following dataset: [github.com/PeterNotenboom/SwiftCodes](https://github.com/PeterNotenboom/SwiftCodes).<br>
   Notebook to reproduce data loading and sampling: [py/swift_codes_parser.ipynb](py/swift_codes_parser.ipynb)
+* ISO 3166-1 alpha-2 country codes are taken from [gist.github.com/tadast/8827699](https://gist.github.com/tadast/8827699)
 
 ## How to build
 * The project was built from the Vite+Svelte template

@@ -1,3 +1,6 @@
+// SWIFT codes, sampled from the following dataset:
+// https://github.com/PeterNotenboom/SwiftCodes
+
 export const swiftCodes = [
 	"INBUMXMM",
 	"FCPEPEP1",

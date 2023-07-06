@@ -2,12 +2,15 @@
     import { tick } from "svelte";
 	import ThemeSwitcher from "./lib/ThemeSwitcher.svelte";
 	import { swiftCodes } from "./lib/SwiftCodes"
+	import {ISOCountryCodes} from "./lib/ISOCountryCodes"
 
 
 	// ***** state ***** //
 
 	let digits = "0123456789";
-	let allowedLetters = "ABCDEFGHIJKLMNPQRSTUVWXYZ";  // don't include "O" since it may be confused with 0
+	// capital latin letters.
+	// don't include "O" since it may be confused with 0
+	let allowedLetters = "ABCDEFGHIJKLMNPQRSTUVWXYZ";
 	
 	// if you change this value,
 	// you MUST change "max" value of "inputLettersMin" and "inputLettersMax" sliders.
@@ -37,7 +40,8 @@
 		{id: "'", text: "Apostrophe"},
 	]
 	// match any separator or space character
-	let regexpNormalizeGuess = new RegExp(separators.map(x => x.id).join("|") + "|\\s", "g")
+	const regexpNormalizeGuess = new RegExp(separators.map(x => x.id).join("|") + "|\\s", "g")
+	const regexpCapitalLetter = /^[A-Z]$/
 
 	let modes = {
 		rewrite: "Rewrite",
@@ -59,7 +63,7 @@
 	let blockUpdatingSequence = false;
 	let targetSeq;
 	generateSequence();
-	$: targetSeqSeparated = separateSequence(targetSeq);
+	$: targetSeqSeparated = separateSequence(targetSeq, selectedFormat !== "iban");
 
 	let visibleTask = true;
 	let visibleGuess = true;
@@ -74,6 +78,7 @@
 	$: taskDescription = `${modes[selectedMode]} ${selectedFormat !== "custom" ? formats[selectedFormat] : "the"} ${selectedFormat === "custom" ? "sequence" : "code"}`;
 
 	console.log(`loaded ${swiftCodes.length} swift codes. sample codes: ${randomChoiceMultiple(swiftCodes, 5)}`);
+	console.log(`loaded ${ISOCountryCodes.length} ISO country codes. sample codes: ${randomChoiceMultiple(ISOCountryCodes, 5)}`);
 
 	activateLayoutFromSelectedMode();
 
@@ -122,6 +127,97 @@
 		}
 	}
 
+	function IBANExpandLetters(str) {
+		// Replace the letters in the string with digits, expanding the string as necessary, 
+		// such that A = 10, B = 11, and Z = 35. 
+		// Each alphabetic character is therefore replaced by 2 digits
+		
+		str = str.toUpperCase();
+		let res = [];
+
+		for (let i = 0; i < str.length; ++i){
+			if (regexpCapitalLetter.test(str[i])){
+				let letterCode = 10 + str[i].charCodeAt(0) - "A".charCodeAt(0);
+				res.push(letterCode.toString());
+			}
+			else {
+				res.push(str[i]);
+			}
+		}
+		res = res.join("");
+
+		return res;
+	}
+
+	function longMathModulo97(numStr) {
+		// piece-wise modulo 97 operation that handles arbitrary large integer (written as string) as input.
+		// refer to https://en.wikipedia.org/wiki/International_Bank_Account_Number#Modulo_operation_on_IBAN
+		// possibly need to modify the function to be able to generalize to divisors other than 97.
+
+		const divisor = 97;
+
+		let i = 9;
+		let num = parseInt(numStr.slice(0, i), 10);
+		let remainder = num % divisor;
+
+		while (i < numStr.length) {
+			if (remainder < 10) {
+				num = remainder.toString() + numStr.slice(i, i + 8);
+				i += 8;
+			}
+			else {
+				num = remainder.toString() + numStr.slice(i, i + 7);
+				i += 7;
+			}
+			remainder = num % divisor;
+		}
+
+		return remainder;
+	}
+
+	function generateIBAN() {
+		// generate pseudo IBAN:
+		// a sequence that looks like IBAN, has valid ISO country code,
+		// but does not follow contry specific rules for Basic Bank Account Number (BBAN).
+		// refer to: https://en.wikipedia.org/wiki/International_Bank_Account_Number#Structure
+
+		let seqLen = randIntUniform(26, 31);
+		let nLetters = randIntUniform(0, 5);
+		let nDigits = seqLen - nLetters;
+		
+		let seq = randomChoiceMultiple(digits, nDigits);
+		seq = seq.join("");
+	
+		if (nLetters > 0){
+			// insert letters as a continuous chunk at a random position
+			let letters = randomChoiceMultiple(allowedLetters, nLetters);
+			letters = letters.join("");
+
+			let lettersPosition = randIntUniform(0, nDigits);
+			seq = seq.slice(0, lettersPosition) + letters + seq.slice(lettersPosition);
+		}
+
+		let countryCode = randomChoice(ISOCountryCodes);
+
+		// now we need to generate IBAN check digits. refer to:
+		// https://en.wikipedia.org/wiki/International_Bank_Account_Number#Generating_IBAN_check_digits
+
+		let seqExpanded = IBANExpandLetters(seq + countryCode + "00");
+		console.log(`seqExpanded: ${seqExpanded}`)
+		
+		let checkDigits = 98 - longMathModulo97(seqExpanded);
+		checkDigits = checkDigits.toString();
+		if (checkDigits.length < 2) {
+			checkDigits = "0" + checkDigits;
+		}
+
+		seq = countryCode + checkDigits + seq;
+
+		return seq;
+	}
+
+	// random functions. end
+
 	function generateSequence() {
 		if (blockUpdatingSequence) {
 			return;
@@ -153,31 +249,47 @@
 			targetSeq = randomChoice(swiftCodes);
 		}
 		else if (selectedFormat === "iban") {
-			targetSeq = "IBAN is not supported yet";
+			targetSeq = generateIBAN();
 		}
 	}
 
-	function separateSequence(sequence) {
+	function separateSequence(sequence, rightToLeft) {
+		// if rightToLeft is true, than will leave dangling portion that is shorter than separateStep in left,
+		// otherwise - in right of the sequence.
+
 		if (!toSeparateSeq) {
 			return sequence;
 		}
 
+		let res;
 		let arr = [];
-		let i = sequence.length - separateStep;
-		while (i >= 0){
-			arr.push(sequence.slice(i, i + separateStep));
-			i -= separateStep
+
+		if (rightToLeft){
+			let i = sequence.length - separateStep;
+			while (i >= 0){
+				arr.push(sequence.slice(i, i + separateStep));
+				i -= separateStep
+			}
+			if (i < 0 && i > -separateStep){
+				arr.push(sequence.slice(0, sequence.length % separateStep))
+			}
+			res = arr.reverse().join(sequenceSeparator);
 		}
-		if (i < 0 && i > - separateStep){
-			arr.push(sequence.slice(0, sequence.length % separateStep))
+		else {
+			let i = 0;
+			while (i < sequence.length){
+				arr.push(sequence.slice(i, i + separateStep));
+				i += separateStep;
+			}
+			res = arr.join(sequenceSeparator);
 		}
 
-		return arr.reverse().join(sequenceSeparator); 
+		return res;
 	}
 
 	function separateTargetSequence() {
 		if (!blockUpdatingSequence) {
-			targetSeqSeparated = separateSequence(targetSeq);
+			targetSeqSeparated = separateSequence(targetSeq, selectedFormat !== "iban");
 		}
 	}
 	
@@ -224,7 +336,8 @@
 			toSeparateSeq = true;
 		}
 		else if (selectedFormat === "iban") {
-
+			toSeparateSeq = true;
+			separateStep = 4;
 		}
 		else if (selectedFormat === "swift"){
 			toSeparateSeq = false;
