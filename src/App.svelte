@@ -1,5 +1,6 @@
 <script>
-    import { tick } from "svelte";
+    import { locale, localesList, tr } from "./lib/i18n";
+	import { tick } from "svelte";
 	import ThemeSwitcher from "./lib/ThemeSwitcher.svelte";
 	import { swiftCodes } from "./lib/SwiftCodes"
 	import {ISOCountryCodes} from "./lib/ISOCountryCodes"
@@ -34,26 +35,16 @@
 	
 	let toSeparateSeq = true;
 	let separateStep = 4;
-	let sequenceSeparator = " ";
-	let separators = [
-		{id: " ", text: "Space"},
-		{id: "'", text: "Apostrophe"},
-	]
+	let separators = {space: " ", apostrophe: "'"};
+	let selectedSeparator = "space";
 	// match any separator or space character
-	const regexpNormalizeGuess = new RegExp(separators.map(x => x.id).join("|") + "|\\s", "g")
-	const regexpCapitalLetter = /^[A-Z]$/
+	const regexpNormalizeGuess = new RegExp(Object.values(separators).join("|") + "|\\s", "g");
+	const regexpCapitalLetter = /^[A-Z]$/;
 
-	let modes = {
-		rewrite: "Rewrite",
-		memorize: "Memorize"
-	}
+	let modes = ["rewrite", "memorize"];
 	let selectedMode = "rewrite";
 
-	let formats = {
-		custom: "Custom",
-		iban: "IBAN",
-		swift: "SWIFT",
-	}
+	let formats = ["custom", "iban", "swift"];
 	let selectedFormat = "custom";
 
 	let customSequenceControlsBlocked;
@@ -74,8 +65,10 @@
 	let nCorrect = 0;
 	let nMistakes = 0;
 
+	let taskDescriptionTranslationKey;
 	let taskDescription;
-	$: taskDescription = `${modes[selectedMode]} ${selectedFormat !== "custom" ? formats[selectedFormat] : "the"} ${selectedFormat === "custom" ? "sequence" : "code"}`;
+	$: taskDescriptionTranslationKey = ["taskDescription",  selectedMode, selectedFormat].join(".");
+	$: taskDescription = $tr(taskDescriptionTranslationKey)
 
 	console.log(`loaded ${swiftCodes.length} swift codes. sample codes: ${randomChoiceMultiple(swiftCodes, 5)}`);
 	console.log(`loaded ${ISOCountryCodes.length} ISO country codes. sample codes: ${randomChoiceMultiple(ISOCountryCodes, 5)}`);
@@ -203,7 +196,7 @@
 		// https://en.wikipedia.org/wiki/International_Bank_Account_Number#Generating_IBAN_check_digits
 
 		let seqExpanded = IBANExpandLetters(seq + countryCode + "00");
-		console.log(`seqExpanded: ${seqExpanded}`)
+		console.log(`seqExpanded: ${seqExpanded}`)  // TODO: remove
 		
 		let checkDigits = 98 - longMathModulo97(seqExpanded);
 		checkDigits = checkDigits.toString();
@@ -273,7 +266,7 @@
 			if (i < 0 && i > -separateStep){
 				arr.push(sequence.slice(0, sequence.length % separateStep))
 			}
-			res = arr.reverse().join(sequenceSeparator);
+			res = arr.reverse().join(separators[selectedSeparator]);
 		}
 		else {
 			let i = 0;
@@ -281,7 +274,7 @@
 				arr.push(sequence.slice(i, i + separateStep));
 				i += separateStep;
 			}
-			res = arr.join(sequenceSeparator);
+			res = arr.join(separators[selectedSeparator]);
 		}
 
 		return res;
@@ -304,16 +297,16 @@
 		let guessNorm = guess.replace(regexpNormalizeGuess, "");  // remove space characters
 		guessNorm = guessNorm.toUpperCase();
 
-		console.log("Check guess ", guessNorm, " to be equal to target ", targetSeq)
+		console.log("Check guess", guessNorm, "to be equal to target", targetSeq)
 		
 		if (guessNorm === targetSeq){
-			statusText = "Correct";
+			statusText = $tr("status.correct");
 			nCorrect += 1;
 			document.getElementById("inputGuess").setAttribute("aria-invalid", "false");
 			guessInputsDisabled = true;
 		}
 		else{
-			statusText = "Mistake";
+			statusText = $tr("status.mistake");
 			nMistakes += 1;
 			document.getElementById("inputGuess").setAttribute("aria-invalid", "true");
 		}
@@ -482,50 +475,50 @@
 </script>
 
 <hgroup id="header">
-	<h2>OCD fighter 🔥</h2>
-	<h3>Fight Obsessive–compulsive disorder by solving simple tasks</h3>
+	<h2>{$tr("title.text")} 🔥</h2>
+	<h3>{$tr("title.description")}</h3>
 </hgroup>
 
 <div id="appForm">
 	
-	<p id="paragraphScore">✅ Correct: {nCorrect}. 🙄 Mistakes: {nMistakes}</p>
+	<p id="paragraphScore">✅ {$tr("correct")}: {nCorrect}. 🙄 {$tr("mistakes")}: {nMistakes}</p>
 
 	<details id="controls">
 		<!-- TODO: width of details container varies depending on the open status -->
-		<summary id="controlsSummary">Settings</summary>
+		<summary id="controlsSummary">{$tr("settings")}</summary>
 
 		<div class="divFlexHorizontal">
-			<label class="flex-1">Format
+			<label class="flex-1">{$tr("settings.format")}
 				<select bind:value={selectedFormat} on:change={changeFormat}>
-					{#each Object.keys(formats) as key}
-						<option value={key}>{formats[key]}</option>
+					{#each formats as key}
+						<option value={key}>{$tr("settings.format." + key)}</option>
 					{/each}
 				</select>
 			</label>
 
-			<label class="flex-1">Mode
+			<label class="flex-1">{$tr("settings.mode")}
 				<select bind:value={selectedMode} on:change={selectModeOnChange}>
-					{#each Object.keys(modes) as key}
-						<option value={key}>{modes[key]}</option>
+					{#each modes as key}
+						<option value={key}>{$tr("settings.mode." + key)}</option>
 					{/each}
 				</select>
 			</label>
 		</div>
 
-		<label>Sequence length: {sequenceLength}
+		<label>{$tr("settings.seqLen")}: {sequenceLength}
 			<input type="range" min=4 max=20 bind:value={sequenceLength} 
 			 on:input={seqLenOnInput} on:change={seqLenOnChange} disabled={customSequenceControlsBlocked}
 			>
 		</label>
 
 		<div class="divFlexHorizontal">
-			<label class="max-width-250px">Min letters: {lettersMin}
+			<label class="max-width-250px">{$tr("settings.minLetters")}: {lettersMin}
 				<input id="inputLettersMin" type="range" min=0 max=8 step=1 bind:value={lettersMinDisplay} 
 				 on:input={lettersMinOnInput} disabled={customSequenceControlsBlocked}
 				>
 			</label>
 
-			<label class="max-width-250px">Max letters: {lettersMax}
+			<label class="max-width-250px">{$tr("settings.maxLetters")}: {lettersMax}
 				<input id="inputLettersMax" type="range" min=0 max=8 step=1 bind:value={lettersMaxDisplay}
 				 on:input={lettersMaxOnInput} disabled={customSequenceControlsBlocked}>
 			</label>
@@ -535,21 +528,21 @@
 			<input type="checkbox" role="switch" bind:checked={toSeparateSeq}
 			 on:change={separateTargetSequence} disabled={separateSequenceControlsBlocked}
 			>
-			Separate sequence
+			{$tr("settings.separateSeq")}
 		</label>
 
 		<div class="divFlexHorizontal">
-			<label id="inputSeparator">Separator
+			<label id="inputSeparator">{$tr("settings.separator")}
 				<select disabled={!toSeparateSeq || separateSequenceControlsBlocked}
-				 bind:value={sequenceSeparator} on:change={separateTargetSequence}
+				 bind:value={selectedSeparator} on:change={separateTargetSequence}
 				>
-					{#each separators as sep}
-						<option value={sep.id}>{sep.text}</option>
+					{#each Object.keys(separators) as sep}
+						<option value={sep}>{$tr("settings.separator." + sep)}</option>
 					{/each}
 				</select>
 			</label>
 			
-			<label id="inputSeparatorStep">Step: {separateStep}
+			<label id="inputSeparatorStep">{$tr("settings.separatorStep")}: {separateStep}
 				<input type="range" min=2 max=5 disabled={!toSeparateSeq || separateSequenceControlsBlocked}
 				 bind:value={separateStep} on:input={separateTargetSequence}
 				>
@@ -563,19 +556,19 @@
 			<div id="task">
 				<p>{taskDescription}</p>
 				<p><strong>{targetSeqSeparated}</strong></p>
-				<button id="buttonReady" on:click={readyToGuess}>Ready</button>
+				<button id="buttonReady" on:click={readyToGuess}>{$tr("button.ready")}</button>
 			</div>
 		{/if}
 
 		{#if visibleGuess}
 			<div id="guess">
-				<label id="labelGuess" for="inputGuess">Your guess</label>
+				<label id="labelGuess" for="inputGuess">{$tr("yourGuess")}</label>
 				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 				
 				<div id="guessButtonRow">
-					<button id="buttonRestart" class="contrast outline" on:click={buttonRestartOnClick}>Restart</button>	
-					<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>Show Answer</button>	
-					<button id="buttonCheck" on:click={checkGuess} disabled={guessInputsDisabled}>Check</button>
+					<button id="buttonRestart" class="contrast outline" on:click={buttonRestartOnClick}>{$tr("button.restart")}</button>	
+					<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>{$tr("button.showAnswer")}</button>	
+					<button id="buttonCheck" on:click={checkGuess} disabled={guessInputsDisabled}>{$tr("button.check")}</button>
 				</div>
 				
 				<p id="paragraphStatus">{statusText}</p>
@@ -585,7 +578,18 @@
 </div>
 
 <div id="footer">
-	<ThemeSwitcher />
+	<div id="footerLanguageThemePickers">
+		<!-- TODO: add font awesome globe icon -->
+		<label>{$tr("language")}
+			<select bind:value={$locale}>
+				{#each localesList as loc}
+					<option value={loc}>{loc}</option>
+				{/each}
+			</select>
+		</label>
+		
+		<ThemeSwitcher />
+	</div>
 
 	<!-- TODO: not visible on default startup screen -->
 	<a href="https://github.com/navalnica/akr" target="_blank" rel="noreferrer">
@@ -682,6 +686,23 @@
 		visibility: hidden;
 	}
 
+	#footerLanguageThemePickers {
+		display: flex;
+		flex-direction: row;
+		justify-content: center;
+		gap: 0.5rem;
+	}
+
+	#footerLanguageThemePickers, #footerLanguageThemePickers > label > *{
+		font-size: 0.9rem;
+	}
+
+	#footerLanguageThemePickers > label > select {
+        max-width: 120px;
+		padding: 5px;
+        text-align: left;
+    }
+
 	label {
 		text-align: left;
 	}
@@ -695,6 +716,7 @@
 		padding-bottom: calc(var(--spacing) * .25);
 	}
 
+	/* TODO: add transition via Svelte tweede */
 	details[open] summary ~ * {
 		animation: sweep .7s ease-in-out;
 	}

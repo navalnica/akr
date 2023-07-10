@@ -4,6 +4,8 @@
 -->
 
 <script>
+    import { tr } from "./i18n";
+
     function detectColorScheme(){
         //determine if the theme was already set either by system (browser theme) or by user
 
@@ -35,10 +37,10 @@
 </script>
 
 <label id="labelThemeSelect" for="selectTheme">
-    Theme: 
+    {$tr("theme")}
     <select id="selectTheme" bind:value={themeSelected} on:change={switchTheme}>
-        <option value="dark">Dark</option>
-        <option value="light">Light</option>
+        <option value="dark">{$tr("theme.dark")}</option>
+        <option value="light">{$tr("theme.light")}</option>
     </select>
 </label>
 
@@ -48,8 +50,12 @@
     }
 
     #selectTheme {
-        max-width: 100px;
+        max-width: 120px;
         padding: 5px;
+        text-align: left;
+    }
+
+    #labelThemeSelect {
         text-align: left;
     }
 </style>

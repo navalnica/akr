@@ -10,8 +10,9 @@ You can try it yourself here: [navalnica.github.io/akr](https://navalnica.github
 ## Features to add
 The project is in development. You are welcome to help to implement following features!
 
-* translate into Belarusian
-* fix layout jitter when opening setting. probably use `display: grid` instead of flexboxes
+* add transitions via Svelte
+* fix layout jitter when opening settings and when switching languages. 
+  probably use `display: grid` instead of flexboxes
 
 ## Technologies used
 * [Svelte](https://svelte.dev) framework - to build reactive interface
