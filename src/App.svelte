@@ -482,6 +482,7 @@
 	
 	<p id="paragraphScore">✅ {$tr("correct")}: {nCorrect}&nbsp&nbsp&nbsp&nbsp🙄 {$tr("mistakes")}: {nMistakes}</p>
 
+	<!-- TODO: add "About" model window -->
 	<details id="controls">
 		<!-- TODO: width of details container varies depending on the open status -->
 		<summary id="controlsSummary">{$tr("settings")}</summary>
@@ -561,6 +562,7 @@
 
 		{#if visibleGuess}
 			<div id="guess">
+				<!-- TODO: height jumps when clicking on "Check" and "Show answer" -->
 				<label id="labelGuess" for="inputGuess">{$tr("yourGuess")}</label>
 				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 				
@@ -580,6 +582,7 @@
 	<div id="footerLanguageThemePickers">
 		<!-- TODO: add font awesome globe icon -->
 		<label>{$tr("language")}
+			<!-- TODO: currently language is not stored in local storage -->
 			<select bind:value={$locale}>
 				{#each localesList as loc}
 					<option value={loc}>{loc}</option>
