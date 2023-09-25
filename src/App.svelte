@@ -196,7 +196,6 @@
 		// https://en.wikipedia.org/wiki/International_Bank_Account_Number#Generating_IBAN_check_digits
 
 		let seqExpanded = IBANExpandLetters(seq + countryCode + "00");
-		console.log(`seqExpanded: ${seqExpanded}`)  // TODO: remove
 		
 		let checkDigits = 98 - longMathModulo97(seqExpanded);
 		checkDigits = checkDigits.toString();
@@ -379,7 +378,7 @@
 		await tick();
 
 		let mainCard = document.getElementById("mainCard");
-		mainCard.style.height = "350px";
+		mainCard.style.height = "";
 		mainCard.style.justifyContent = "space-between";
 
 		// hide nodes
@@ -397,7 +396,7 @@
 		await tick()
 		
 		let mainCard = document.getElementById("mainCard");
-		mainCard.style.height = "250px";
+		mainCard.style.height = "200px";
 		mainCard.style.justifyContent = "center";
 		
 		document.getElementById("buttonReady").style.display = "";
@@ -481,7 +480,7 @@
 
 <div id="appForm">
 	
-	<p id="paragraphScore">✅ {$tr("correct")}: {nCorrect}. 🙄 {$tr("mistakes")}: {nMistakes}</p>
+	<p id="paragraphScore">✅ {$tr("correct")}: {nCorrect}&nbsp&nbsp&nbsp&nbsp🙄 {$tr("mistakes")}: {nMistakes}</p>
 
 	<details id="controls">
 		<!-- TODO: width of details container varies depending on the open status -->
@@ -506,7 +505,7 @@
 		</div>
 
 		<label>{$tr("settings.seqLen")}: {sequenceLength}
-			<input type="range" min=4 max=20 bind:value={sequenceLength} 
+			<input type="range" min=4 max=50 bind:value={sequenceLength} 
 			 on:input={seqLenOnInput} on:change={seqLenOnChange} disabled={customSequenceControlsBlocked}
 			>
 		</label>
@@ -555,7 +554,7 @@
 		{#if visibleTask}
 			<div id="task">
 				<p>{taskDescription}</p>
-				<p><strong>{targetSeqSeparated}</strong></p>
+				<p id="taskContent"><strong>{targetSeqSeparated}</strong></p>
 				<button id="buttonReady" on:click={readyToGuess}>{$tr("button.ready")}</button>
 			</div>
 		{/if}
@@ -601,7 +600,6 @@
 	#appForm {
 		display: flex;
 		flex-direction: column;
-		align-items: stretch;
 		gap: 0.5rem;
 	}
 
@@ -660,13 +658,18 @@
 		flex-direction: column;
 		justify-content: center;
 		align-items: stretch;
-		height: 350px;
 		margin-top: 0;
+		padding-top: 16px;
+		padding-bottom: 16px;
 	}
 
 	#task {
 		display: flex;
 		flex-direction: column;
+	}
+
+	#taskContent {
+		font-family: monospace;
 	}
 
 	#buttonReady {
@@ -678,12 +681,16 @@
 		display: flex;
 		gap: 0.5rem;
 	}
-
-	#guessButtonRow > button {
-		flex: 1;
+	#buttonRestart, #buttonCheck {
+		flex: 1 3 120px;
 	}
+	#buttonShowAnswer{
+		flex: 1 1 120px;
+	}
+
 	#paragraphStatus {
 		visibility: hidden;
+		margin-bottom: 10px;
 	}
 
 	#footerLanguageThemePickers {

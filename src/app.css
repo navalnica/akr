@@ -43,7 +43,7 @@
   -webkit-text-size-adjust: 100%;
 
   --form-element-spacing-vertical: 0.3rem;
-  --form-element-spacing-horizontal: 0.7rem;
+  --form-element-spacing-horizontal: 0.5rem;
   --typography-spacing-vertical: 1rem;
 }
 
@@ -51,7 +51,6 @@ body {
   margin: 0;
   display: flex;
   justify-content: center;
-  min-width: 320px;
   min-height: 100vh;
 }
 
@@ -60,7 +59,11 @@ body {
   flex-direction: column;
   justify-content: space-around;
   align-items: stretch;
-  max-width: 650px;
+  min-width: 320px;
+  /* The app width when Settings controls are fully expanded is 595px. 
+  Long text in task content may cause the app width to grow even further.
+  In order to avoid app width growing on increase of target sequence length, we set  max width to be 595px. */
+  max-width: 595px;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
