@@ -31,7 +31,7 @@
 </script>
 
 <label id="labelLanguageSelect">
-    {$tr("language")}&nbsp&nbsp<i class="fa-solid fa-globe"></i>
+    &nbsp&nbsp{$tr("language")}&nbsp&nbsp<i class="fa-solid fa-globe"></i>
     <select id="selectLanguage" bind:value={$localeStore} on:change={onLocaleChange}>
         {#each localesList as loc}
             <option value={loc}>{loc}</option>
@@ -40,16 +40,6 @@
 </label>
 
 <style>
-    #labelLanguageSelect > *, #labelLanguageSelect {
-        font-size: 0.9rem;
-    }
-
-    #selectLanguage {
-        max-width: 120px;
-        padding: 5px;
-        text-align: left;
-    }
-
     #labelLanguageSelect {
         text-align: left;
     }

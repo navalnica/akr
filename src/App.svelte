@@ -397,7 +397,7 @@
 		await tick()
 		
 		let mainCard = document.getElementById("mainCard");
-		mainCard.style.height = "200px";
+		mainCard.style.height = "14em";
 		mainCard.style.justifyContent = "space-between";
 		
 		document.getElementById("buttonReady").style.display = "";
@@ -579,8 +579,8 @@
 
 <div id="footer">
 	<div id="footerLanguageThemePickers">
-		<LanguageSwitcher />		
-		<ThemeSwitcher />
+		<div class="footerSelect"><LanguageSwitcher /></div>
+		<div class="footerSelect"><ThemeSwitcher /></div>
 	</div>
 
 	<a href="https://github.com/navalnica/akr" target="_blank" rel="noreferrer">
@@ -668,7 +668,7 @@
 	}
 
 	#buttonReady {
-		width: 30%;
+		width: 10em;
 		align-self: center;
 	}
 
@@ -677,10 +677,10 @@
 		gap: 0.5rem;
 	}
 	#buttonRestart, #buttonCheck {
-		flex: 1 3 120px;
+		flex: 1 3 10em;
 	}
 	#buttonShowAnswer{
-		flex: 1 1 120px;
+		flex: 1 1 10em;
 	}
 
 	#paragraphStatus {
@@ -693,6 +693,11 @@
 		flex-direction: row;
 		justify-content: center;
 		gap: 0.5rem;
+		font-size: 0.9rem;
+	}
+	.footerSelect {
+		flex: 1;
+		max-width: 9em;
 	}
 
 	label {

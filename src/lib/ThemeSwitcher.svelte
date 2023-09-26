@@ -37,7 +37,7 @@
 </script>
 
 <label id="labelThemeSelect" for="selectTheme">
-    {$tr("theme")}&nbsp&nbsp<i class="fa-solid fa-circle-half-stroke"></i>
+    &nbsp&nbsp{$tr("theme")}&nbsp&nbsp<i class="fa-solid fa-circle-half-stroke"></i>
     <select id="selectTheme" bind:value={themeSelected} on:change={switchTheme}>
         <option value="dark">{$tr("theme.dark")}</option>
         <option value="light">{$tr("theme.light")}</option>
@@ -45,16 +45,6 @@
 </label>
 
 <style>
-    #labelThemeSelect > *, #labelThemeSelect {
-        font-size: 0.9rem;
-    }
-
-    #selectTheme {
-        max-width: 120px;
-        padding: 5px;
-        text-align: left;
-    }
-
     #labelThemeSelect {
         text-align: left;
     }
