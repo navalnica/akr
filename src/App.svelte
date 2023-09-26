@@ -1,7 +1,8 @@
 <script>
-    import { locale, localesList, tr } from "./lib/i18n";
+    import { tr } from "./lib/i18n";
 	import { tick } from "svelte";
 	import ThemeSwitcher from "./lib/ThemeSwitcher.svelte";
+	import LanguageSwitcher from "./lib/LanguageSwitcher.svelte";
 	import { swiftCodes } from "./lib/SwiftCodes"
 	import {ISOCountryCodes} from "./lib/ISOCountryCodes"
 
@@ -484,7 +485,6 @@
 
 	<!-- TODO: add "About" model window -->
 	<details id="controls">
-		<!-- TODO: width of details container varies depending on the open status -->
 		<summary id="controlsSummary">{$tr("settings")}</summary>
 
 		<div class="divFlexHorizontal">
@@ -562,7 +562,6 @@
 
 		{#if visibleGuess}
 			<div id="guess">
-				<!-- TODO: height jumps when clicking on "Check" and "Show answer" -->
 				<label id="labelGuess" for="inputGuess">{$tr("yourGuess")}</label>
 				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 				
@@ -580,20 +579,10 @@
 
 <div id="footer">
 	<div id="footerLanguageThemePickers">
-		<!-- TODO: add font awesome globe icon -->
-		<label>{$tr("language")}
-			<!-- TODO: currently language is not stored in local storage -->
-			<select bind:value={$locale}>
-				{#each localesList as loc}
-					<option value={loc}>{loc}</option>
-				{/each}
-			</select>
-		</label>
-		
+		<LanguageSwitcher />		
 		<ThemeSwitcher />
 	</div>
 
-	<!-- TODO: not visible on default startup screen -->
 	<a href="https://github.com/navalnica/akr" target="_blank" rel="noreferrer">
 		<i class="fa-brands fa-github" style="font-size:18px"></i> GitHub
 	</a>
@@ -706,16 +695,6 @@
 		gap: 0.5rem;
 	}
 
-	#footerLanguageThemePickers, #footerLanguageThemePickers > label > *{
-		font-size: 0.9rem;
-	}
-
-	#footerLanguageThemePickers > label > select {
-        max-width: 120px;
-		padding: 5px;
-        text-align: left;
-    }
-
 	label {
 		text-align: left;
 	}
@@ -729,7 +708,6 @@
 		padding-bottom: calc(var(--spacing) * .25);
 	}
 
-	/* TODO: add transition via Svelte tweede */
 	details[open] summary ~ * {
 		animation: sweep .7s ease-in-out;
 	}
