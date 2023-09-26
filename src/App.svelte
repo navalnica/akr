@@ -397,7 +397,7 @@
 		
 		let mainCard = document.getElementById("mainCard");
 		mainCard.style.height = "200px";
-		mainCard.style.justifyContent = "center";
+		mainCard.style.justifyContent = "space-between";
 		
 		document.getElementById("buttonReady").style.display = "";
 	}
@@ -506,7 +506,7 @@
 		</div>
 
 		<label>{$tr("settings.seqLen")}: {sequenceLength}
-			<input type="range" min=4 max=50 bind:value={sequenceLength} 
+			<input type="range" min=4 max=40 bind:value={sequenceLength} 
 			 on:input={seqLenOnInput} on:change={seqLenOnChange} disabled={customSequenceControlsBlocked}
 			>
 		</label>
@@ -630,7 +630,7 @@
 
 	/* Now we can use simple id as `#controlsSummary` a selector */
 	#controlsSummary {
-		width: clamp(90px, 20%, 20%);
+		width: clamp(5.5em, 20%, 20%);
 	}
 
 	.flex-1 {
@@ -664,6 +664,9 @@
 		margin-top: 0;
 		padding-top: 16px;
 		padding-bottom: 16px;
+		padding-left: 12px;
+		padding-right: 12px;
+		font-size: 0.9em;
 	}
 
 	#task {
