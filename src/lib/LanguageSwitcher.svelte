@@ -5,7 +5,7 @@
         //determine if locale was already set
 
         var defaultLocale = "en";
-        var localStorageLocale =localStorage.getItem("locale");
+        var localStorageLocale = localStorage.getItem("locale");
         var browserLocale = navigator.language;
 
         if(localStorageLocale){
@@ -17,10 +17,9 @@
                 console.log(`detected "${browserLocale}" as browser language. setting locale to "be"`);
                 return "be";
             }
-        } else {
-            console.log(`could not determine locale. using default: "${defaultLocale}"`);
-            return defaultLocale;
-        }
+        } 
+        console.log(`could not determine locale. using default: "${defaultLocale}"`);
+        return defaultLocale;
     }
 
     function onLocaleChange() {
