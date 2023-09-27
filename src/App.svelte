@@ -562,7 +562,7 @@
 
 		{#if visibleGuess}
 			<div id="guess">
-				<label id="labelGuess" for="inputGuess">{$tr("yourGuess")}</label>
+				<label id="labelGuess" for="inputGuess">{$tr("writeSequence")}</label>
 				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 				
 				<div id="guessButtonRow">

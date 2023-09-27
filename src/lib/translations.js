@@ -23,7 +23,7 @@ export default {
         "settings.separator.space": "Прагал",
         "settings.separator.apostrophe": "Апостраф",
 
-        "yourGuess": "Твая здагадка",
+        "writeSequence": "Напішы пасьлядоўнасьць",
 
         "taskDescription.rewrite.custom": "Перапішы пасьлядоўнасьць",
         "taskDescription.rewrite.iban": "Перапішы IBAN код",
@@ -70,7 +70,7 @@ export default {
         "settings.separator.space": "Space",
         "settings.separator.apostrophe": "Apostrophe",
 
-        "yourGuess": "Your Guess",
+        "writeSequence": "Write the sequence",
 
         "taskDescription.rewrite.custom": "Rewrite the sequence",
         "taskDescription.rewrite.iban": "Rewrite IBAN code",
