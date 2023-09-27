@@ -655,7 +655,6 @@
 		padding-bottom: 16px;
 		padding-left: 12px;
 		padding-right: 12px;
-		font-size: 0.9em;
 	}
 
 	#task {
