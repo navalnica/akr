@@ -397,7 +397,7 @@
 		await tick()
 		
 		let mainCard = document.getElementById("mainCard");
-		mainCard.style.height = "14em";
+		mainCard.style.height = "15em";
 		mainCard.style.justifyContent = "space-between";
 		
 		document.getElementById("buttonReady").style.display = "";
@@ -674,7 +674,7 @@
 
 	#guessButtonRow {
 		display: flex;
-		gap: 0.5rem;
+		gap: 0.4em;
 	}
 	#buttonRestart, #buttonCheck {
 		flex: 1 3 10em;
@@ -726,5 +726,7 @@
 		border-radius: 7px;
 		font-weight: 370;
 		font-size: 0.8rem;
+		padding-right: 0.25em;
+		padding-left: 0.25em;
 	}
 </style>
