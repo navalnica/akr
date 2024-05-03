@@ -2,6 +2,7 @@
     import { tr } from "./lib/i18n";
 	import { tick } from "svelte";
 	import ThemeSwitcher from "./lib/ThemeSwitcher.svelte";
+	import ModalAbout from "./lib/ModalAbout.svelte";
 	import LanguageSwitcher from "./lib/LanguageSwitcher.svelte";
 	import { swiftCodes } from "./lib/SwiftCodes"
 	import {ISOCountryCodes} from "./lib/ISOCountryCodes"
@@ -474,10 +475,14 @@
 	}
 </script>
 
-<hgroup id="header">
-	<h2>{$tr("title.text")} 🔥</h2>
-	<h3>{$tr("title.description")}</h3>
-</hgroup>
+<div id="header">
+	<hgroup>
+		<h2>{$tr("title.text")} 🔥</h2>
+		<h3>{$tr("title.description")}</h3>
+	</hgroup>
+	
+	<ModalAbout/>
+</div>
 
 <div id="appForm">
 	
@@ -586,6 +591,7 @@
 	<a href="https://github.com/navalnica/akr" target="_blank" rel="noreferrer">
 		<i class="fa-brands fa-github" style="font-size:18px"></i> GitHub
 	</a>
+
 </div>
 
 <style>

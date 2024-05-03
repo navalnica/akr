@@ -13,7 +13,7 @@ function _translate(locale, key){
 
     let text = translations[locale][key];
 
-    if (!text) throw new Error(`no translation found for ${locale}.${key}`);
+    if (!text) throw new Error(`no translation found for "${key}" key in "${locale}" locale`);
 
     return text;
 }
