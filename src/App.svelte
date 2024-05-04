@@ -380,7 +380,7 @@
 		await tick();
 
 		let mainCard = document.getElementById("mainCard");
-		mainCard.style.height = "";
+		// mainCard.style.height = "";  // TODO; remove when not needed
 		mainCard.style.justifyContent = "space-between";
 
 		// hide nodes
@@ -398,7 +398,7 @@
 		await tick()
 		
 		let mainCard = document.getElementById("mainCard");
-		mainCard.style.height = "15em";
+		// mainCard.style.height = "15em";  // TODO: fix the bug with task card height
 		mainCard.style.justifyContent = "space-between";
 		
 		document.getElementById("buttonReady").style.display = "";
@@ -488,7 +488,6 @@
 	
 	<p id="paragraphScore">✅ {$tr("correct")}: {nCorrect}&nbsp&nbsp&nbsp&nbsp🙄 {$tr("mistakes")}: {nMistakes}</p>
 
-	<!-- TODO: add "About" model window -->
 	<details id="controls">
 		<summary id="controlsSummary">{$tr("settings")}</summary>
 
@@ -567,7 +566,7 @@
 
 		{#if visibleGuess}
 			<div id="guess">
-				<label id="labelGuess" for="inputGuess">{$tr("writeSequence")}</label>
+				<p id="labelGuess" for="inputGuess">{$tr("writeSequence")}</p>
 				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 				
 				<div id="guessButtonRow">
@@ -672,20 +671,31 @@
 		font-family: monospace;
 	}
 
+	button {
+		border-radius: 7px;
+		font-weight: 420;
+		padding-right: 0.25em;
+		padding-left: 0.25em;
+		height: 1.9rem;
+		padding-top: 0;
+		padding-bottom: 0;
+	}
 	#buttonReady {
-		width: 10em;
+		width: 10rem;
 		align-self: center;
 	}
-
 	#guessButtonRow {
 		display: flex;
 		gap: 0.4em;
 	}
+	/* 'width: fit-content' is crucial for correct flex grow and shrink! */
 	#buttonRestart, #buttonCheck {
-		flex: 1 3 10em;
+		width: fit-content;
+		flex: 1 1 auto;
 	}
 	#buttonShowAnswer{
-		flex: 1 1 10em;
+		width: fit-content;
+		flex: 1	1 auto;
 	}
 
 	#paragraphStatus {
@@ -718,6 +728,10 @@
 		padding-bottom: calc(var(--spacing) * .25);
 	}
 
+	/* 
+	match everything after <summary> within the open <details>
+	reference: https://developer.mozilla.org/en-US/docs/Web/CSS/Subsequent-sibling_combinator
+	*/
 	details[open] summary ~ * {
 		animation: sweep .7s ease-in-out;
 	}
@@ -725,13 +739,5 @@
 	@keyframes sweep {
 		0%    {opacity: 0; }
 		100%  {opacity: 1; }
-	}
-
-	button {
-		border-radius: 7px;
-		font-weight: 370;
-		font-size: 0.8rem;
-		padding-right: 0.25em;
-		padding-left: 0.25em;
 	}
 </style>

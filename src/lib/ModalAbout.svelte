@@ -124,6 +124,11 @@
         top: 0px;
     }
 
+    #modal-about header>button:hover {
+        background-color: var(--contrast);
+        color: var(--contrast-inverse);
+    }
+
     #modal-about-description {
         margin-top: 2.5rem;
         margin-bottom: 1rem;
@@ -143,7 +148,7 @@
     #modal-about p,
     li {
         text-align: left;
-        font-size: 0.85rem;
+        font-size: 0.95rem;
         margin-bottom: 0.4rem;
     }
 

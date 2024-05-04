@@ -34,7 +34,7 @@ export default {
 
         "button.ready": "Я гатовы(-ая)",
         "button.restart": "Нанава",
-        "button.showAnswer": "Паказаць адказ",
+        "button.showAnswer": "Адказ",
         "button.check": "Праверыць",
         "button.close": "Зачыніць",
 
@@ -90,6 +90,8 @@ export default {
         "settings.separator.space": "Space",
         "settings.separator.apostrophe": "Apostrophe",
 
+        // TODO: copy/memorize/write memorized sequence/iban code/switft code
+        // TODO: use same terminology in about mode
         "writeSequence": "Write the sequence",
 
         "taskDescription.rewrite.custom": "Rewrite the sequence",
