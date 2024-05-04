@@ -4,7 +4,7 @@ export default {
         "title.description": "Змагайся з абсэсіўна-кампульсіўным разладам простым практыкаваньнем",
 
         "correct": "Адгадкі",
-        "mistakes": "Памылкі",
+        "percent": "Працэнт",
 
         "settings": "Наладкі",
         "settings.format": "Фармат",
@@ -70,7 +70,7 @@ export default {
         "title.description": "Fight Obsessive–compulsive disorder with a simple exercise",
 
         "correct": "Correct",
-        "mistakes": "Mistakes",
+        "percent": "Percent",
 
         "settings": "Settings",
         "settings.format": "Format",

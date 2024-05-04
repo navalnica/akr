@@ -75,6 +75,7 @@
 	let guessInputsDisabled = false;
 	let nCorrect = 0;
 	let nMistakes = 0;
+	$: statsPercent = (nCorrect + nMistakes) === 0 ? 0 : Math.round(nCorrect / (nCorrect + nMistakes) * 100);
 
 	// task on the first screen
 	let taskDescription;
@@ -501,11 +502,11 @@
 </div>
 
 <div id="appForm">
-	
-	<p id="paragraphScore">✅ {$tr("correct")}: {nCorrect}&nbsp&nbsp&nbsp&nbsp🙄 {$tr("mistakes")}: {nMistakes}</p>
+	<p id="paragraphScore">✅ {$tr("correct")}: {nCorrect} / {nCorrect + nMistakes} &nbsp&nbsp&nbsp📝 {$tr("percent")}: {statsPercent}%</p>
 
 	<details id="controls">
-		<summary id="controlsSummary">{$tr("settings")}</summary>
+		<!-- can alternatively use following emojis 🛠 🔧 -->
+		<summary id="controlsSummary">⚙️ {$tr("settings")}</summary>
 
 		<div class="divFlexHorizontal">
 			<label class="flex-1">{$tr("settings.format")}
@@ -627,7 +628,7 @@
 
 	/* `#controls *` allows to ovveride default pico-css selector for select. Thus we can modify font-size. */
 	#controls * {
-		font-size: 0.8rem;
+		font-size: 0.9rem;
 	}
 
 	/* We can't use `#controlsSummary` as selector, 
@@ -640,7 +641,8 @@
 
 	/* Now we can use simple id as `#controlsSummary` a selector */
 	#controlsSummary {
-		width: clamp(5.5em, 20%, 20%);
+		/* 'display: flex' is required to limit item's width and align it to the left */
+		display: flex;
 	}
 
 	.flex-1 {
