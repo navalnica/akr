@@ -2,6 +2,7 @@ export default {
     be: {
         "title.text": "Змаганьне з АКР",
         "title.description": "Змагайся з абсэсіўна-кампульсіўным разладам простым практыкаваньнем",
+        "title.tab": "АКР",
 
         "correct": "Адгадкі",
         "percent": "Працэнт",
@@ -68,6 +69,7 @@ export default {
     en: {
         "title.text": "OCD fighter",
         "title.description": "Fight Obsessive–compulsive disorder with a simple exercise",
+        "title.tab": "OCD",
 
         "correct": "Correct",
         "percent": "Percent",

@@ -24,9 +24,11 @@
 
     function onLocaleChange() {
         localStorage.setItem("locale", $localeStore);
+        document.title = $tr("title.tab");
     }
 
     $localeStore = detectLocale();
+    document.title = $tr("title.tab");
 </script>
 
 <label id="labelLanguageSelect">
