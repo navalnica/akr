@@ -50,7 +50,7 @@ export default {
         "about.title": "Пра праграму",
 
         "about.description.header1": "Ідэя",
-        "about.description.paragraph1": "Вітаю! Я стварыў гэтую праграму, каб пазбавіцца ад праяваў АКР (абсэсіўна-кампульсіўнага разладу) у маім жыцьці: ад няўпэўненасьці ў зробленым і поцягу да пераправеркі. Асноўная ідэя - пачаць сабе давяраць. Для гэтага я прапаную простае практыкаваньне - перапісаць пасьлядоўнасьць літар і лічбаў - і даверыць праверку камп’ютару. Вось убачыш: вялікая колькасьць правільна выканананых практыкаваньняў дапаможа табе пачаць сабе давяраць!",
+        "about.description.paragraph1": "Вітаю! Я стварыў гэтую праграму, каб пазбавіцца ад праяваў АКР (абсэсіўна-кампульсіўнага разладу) у маім жыцьці: ад няўпэўненасьці ў зробленым і поцягу да пераправеркі. Асноўная ідэя - <mark>пачаць сабе давяраць</mark>. Для гэтага я прапаную простае практыкаваньне - <u>перапісаць пасьлядоўнасьць літар і лічбаў</u> - і даверыць праверку камп’ютару. Вось убачыш: вялікая колькасьць правільна выканананых практыкаваньняў дапаможа табе пачаць сабе давяраць!",
 
         "about.description.header2": "Парады",
         "about.description.paragraph2.li1": "Праграма працуе ў двух рэжымах: (1) перапісаць паказаную пасьлядоўнасьць або (2) запомніць пасьлядоўнасьць і напісаць яе па памяці",
@@ -116,7 +116,7 @@ export default {
         "about.title": "About the OCD fighter",
 
         "about.description.header1": "Idea",
-        "about.description.paragraph1": "Hi! I created this program to get rid of OCD (Obsessive-Compulsive Disorder) presence in my life: from uncertainty in what I've done to the need for double-checking. The main idea is to start trusting yourself. To achieve this, I propose a simple exercise - to copy a sequence of letters and numbers - and ask computer to verify the results. You'll see: large number of successes in this exercise will help you start trusting yourself!",
+        "about.description.paragraph1": "Hi! I created this program to get rid of OCD (Obsessive-Compulsive Disorder) presence in my life: from uncertainty in what I've done to the need for double-checking. The main idea is <mark>to start trusting yourself</mark>. To achieve this, I propose a simple exercise - <u>to copy a sequence of letters and numbers</u> - and ask computer to verify the results. You'll see: large number of successes in this exercise will help you start trusting yourself!",
 
         "about.description.header2": "Tips",
         "about.description.paragraph2.li1": "The program works in two modes: (1) to copy a shown sequence or (2) to memorize and then write a sequence from memory",

@@ -81,7 +81,7 @@
         </header>
         <div id="modal-about-description">
             <h5>{$tr("about.description.header1")}</h5>
-            <p>{$tr("about.description.paragraph1")}</p>
+            <p>{@html $tr("about.description.paragraph1")}</p>
 
             <h5>{$tr("about.description.header2")}</h5>
             <ul>
