@@ -43,20 +43,29 @@
 	const regexpNormalizeGuess = new RegExp(Object.values(separators).join("|") + "|\\s", "g");
 	const regexpCapitalLetter = /^[A-Z]$/;
 
-	let modes = ["rewrite", "memorize"];
-	let selectedMode = "rewrite";
+	const Modes = Object.freeze({
+		COPY: 'copy',
+		MEMORIZE: 'memorize',
+	});
+	let modesList = [Modes.COPY, Modes.MEMORIZE];
+	let selectedMode = Modes.COPY;
 
-	let formats = ["custom", "iban", "swift"];
-	let selectedFormat = "custom";
+	const Formats = Object.freeze({
+		CUSTOM: 'custom',
+		IBAN: 'iban',
+		SWIFT: 'swift',
+	});
+	let formatsList = [Formats.CUSTOM, Formats.IBAN, Formats.SWIFT];
+	let selectedFormat = Formats.CUSTOM;
 
 	let customSequenceControlsBlocked;
-	$: customSequenceControlsBlocked = (selectedFormat !== "custom");
-	$: separateSequenceControlsBlocked = (selectedFormat === "swift");
+	$: customSequenceControlsBlocked = (selectedFormat !== Formats.CUSTOM);
+	$: separateSequenceControlsBlocked = (selectedFormat === Formats.SWIFT);
 
 	let blockUpdatingSequence = false;
 	let targetSeq;
 	generateSequence();
-	$: targetSeqSeparated = separateSequence(targetSeq, selectedFormat !== "iban");
+	$: targetSeqSeparated = separateSequence(targetSeq, selectedFormat !== Formats.IBAN);
 
 	let visibleTask = true;
 	let visibleGuess = true;
@@ -67,10 +76,17 @@
 	let nCorrect = 0;
 	let nMistakes = 0;
 
-	let taskDescriptionTranslationKey;
+	// task on the first screen
 	let taskDescription;
-	$: taskDescriptionTranslationKey = ["taskDescription",  selectedMode, selectedFormat].join(".");
-	$: taskDescription = $tr(taskDescriptionTranslationKey)
+	$: taskDescription = $tr(`task.${selectedMode}`) + " " + $tr(`task.format.${selectedFormat}`);
+	// task on the second screen. currently, it's always write by memory task.
+	let taskDescriptionScreen2;
+	$: taskDescriptionScreen2 = 
+		$tr("task.write_from_memory_1") + 
+		" " + 
+		$tr(`task.format.${selectedFormat}`) +
+		" " + 
+		$tr("task.write_from_memory_2");
 
 	console.log(`loaded ${swiftCodes.length} swift codes. sample codes: ${randomChoiceMultiple(swiftCodes, 5)}`);
 	console.log(`loaded ${ISOCountryCodes.length} ISO country codes. sample codes: ${randomChoiceMultiple(ISOCountryCodes, 5)}`);
@@ -217,7 +233,7 @@
 			return;
 		}
 
-		if (selectedFormat === "custom") {
+		if (selectedFormat === Formats.CUSTOM) {
 			let nDigits = 0;
 			let nLetters = 0;
 
@@ -239,10 +255,10 @@
 
 			targetSeq = seq.join("");
 		}
-		else if (selectedFormat === "swift"){
+		else if (selectedFormat === Formats.SWIFT){
 			targetSeq = randomChoice(swiftCodes);
 		}
-		else if (selectedFormat === "iban") {
+		else if (selectedFormat === Formats.IBAN) {
 			targetSeq = generateIBAN();
 		}
 	}
@@ -283,7 +299,7 @@
 
 	function separateTargetSequence() {
 		if (!blockUpdatingSequence) {
-			targetSeqSeparated = separateSequence(targetSeq, selectedFormat !== "iban");
+			targetSeqSeparated = separateSequence(targetSeq, selectedFormat !== Formats.IBAN);
 		}
 	}
 	
@@ -326,14 +342,14 @@
 	}
 
 	function changeFormat() {
-		if (selectedFormat === "custom") {
+		if (selectedFormat === Formats.CUSTOM) {
 			toSeparateSeq = true;
 		}
-		else if (selectedFormat === "iban") {
+		else if (selectedFormat === Formats.IBAN) {
 			toSeparateSeq = true;
 			separateStep = 4;
 		}
-		else if (selectedFormat === "swift"){
+		else if (selectedFormat === Formats.SWIFT){
 			toSeparateSeq = false;
 		}
 
@@ -343,7 +359,7 @@
 	function buttonRestartOnClick() {
 		restartState();
 
-		if (selectedMode === "memorize"){
+		if (selectedMode === Modes.MEMORIZE){
 			visibleGuess = false;
 			visibleTask = true;
 		} else {
@@ -366,15 +382,15 @@
 	}
 
 	async function activateLayoutFromSelectedMode() {
-		if (selectedMode === "rewrite") {
-			activateRewriteLayout();
+		if (selectedMode === Modes.COPY) {
+			activateCopyLayout();
 		}
-		else if (selectedMode === "memorize") {
+		else if (selectedMode === Modes.MEMORIZE) {
 			activateMemorizeLayout();
 		}
 	}
 
-	async function activateRewriteLayout() {
+	async function activateCopyLayout() {
 		visibleTask = true;
 		visibleGuess = true;
 		await tick();
@@ -494,7 +510,7 @@
 		<div class="divFlexHorizontal">
 			<label class="flex-1">{$tr("settings.format")}
 				<select bind:value={selectedFormat} on:change={changeFormat}>
-					{#each formats as key}
+					{#each formatsList as key}
 						<option value={key}>{$tr("settings.format." + key)}</option>
 					{/each}
 				</select>
@@ -502,7 +518,7 @@
 
 			<label class="flex-1">{$tr("settings.mode")}
 				<select bind:value={selectedMode} on:change={selectModeOnChange}>
-					{#each modes as key}
+					{#each modesList as key}
 						<option value={key}>{$tr("settings.mode." + key)}</option>
 					{/each}
 				</select>
@@ -566,7 +582,7 @@
 
 		{#if visibleGuess}
 			<div id="guess">
-				<p id="labelGuess" for="inputGuess">{$tr("writeSequence")}</p>
+				<p id="labelGuess">{taskDescriptionScreen2}</p>
 				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 				
 				<div id="guessButtonRow">
