@@ -533,13 +533,13 @@
 		</label>
 
 		<div class="divFlexHorizontal">
-			<label class="max-width-250px">{$tr("settings.minLetters")}: {lettersMin}
+			<label>{$tr("settings.minLetters")}: {lettersMin}
 				<input id="inputLettersMin" type="range" min=0 max=8 step=1 bind:value={lettersMinDisplay} 
 				 on:input={lettersMinOnInput} disabled={customSequenceControlsBlocked}
 				>
 			</label>
 
-			<label class="max-width-250px">{$tr("settings.maxLetters")}: {lettersMax}
+			<label>{$tr("settings.maxLetters")}: {lettersMax}
 				<input id="inputLettersMax" type="range" min=0 max=8 step=1 bind:value={lettersMaxDisplay}
 				 on:input={lettersMaxOnInput} disabled={customSequenceControlsBlocked}>
 			</label>
@@ -574,26 +574,22 @@
 
 	<article id="mainCard">
 		{#if visibleTask}
-			<div id="task">
-				<p>{taskDescription}</p>
-				<p id="taskContent"><strong>{targetSeqSeparated}</strong></p>
-				<button id="buttonReady" on:click={readyToGuess}>{$tr("button.ready")}</button>
-			</div>
+			<p>{taskDescription}</p>
+			<p id="taskContent"><strong>{targetSeqSeparated}</strong></p>
+			<button id="buttonReady" on:click={readyToGuess}>{$tr("button.ready")}</button>
 		{/if}
 
 		{#if visibleGuess}
-			<div id="guess">
-				<p id="labelGuess">{taskDescriptionScreen2}</p>
-				<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
-				
-				<div id="guessButtonRow">
-					<button id="buttonRestart" class="contrast outline" on:click={buttonRestartOnClick}>{$tr("button.restart")}</button>	
-					<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>{$tr("button.showAnswer")}</button>	
-					<button id="buttonCheck" on:click={checkGuess} disabled={guessInputsDisabled}>{$tr("button.check")}</button>
-				</div>
-				
-				<p id="paragraphStatus">{statusText}</p>
+			<p id="labelGuess">{taskDescriptionScreen2}</p>
+			<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
+			
+			<div id="guessButtonRow">
+				<button id="buttonRestart" class="contrast outline" on:click={buttonRestartOnClick}>{$tr("button.restart")}</button>	
+				<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>{$tr("button.showAnswer")}</button>	
+				<button id="buttonCheck" on:click={checkGuess} disabled={guessInputsDisabled}>{$tr("button.check")}</button>
 			</div>
+			
+			<p id="paragraphStatus">{statusText}</p>
 		{/if}
 	</article>
 </div>
@@ -615,6 +611,15 @@
 		display: flex;
 		flex-direction: column;
 		gap: 0.5rem;
+		margin-top: 1rem;
+		/*
+		use 'flex-grow' to make #appForm grow
+		and the rest of parent container (header and footer) remain fixed in height - "sticky".
+		NOTE: the page would need to have a height that’s equal to the height of the viewport, 
+		or more. We set that in app.css.
+		refer to: https://tympanus.net/codrops/css_reference/flexbox/ - "Sticky Footer" section.
+		*/
+		flex-grow: 1;
 	}
 
 	#paragraphScore {
@@ -648,11 +653,6 @@
 	.flex-1 {
 		flex: 1;
 	}
-
-	.max-width-250px {
-		max-width: 250px;
-	}
-
 	.divFlexHorizontal {
 		display: flex;
 		gap: 1rem;
@@ -678,11 +678,6 @@
 		padding-bottom: 16px;
 		padding-left: 12px;
 		padding-right: 12px;
-	}
-
-	#task {
-		display: flex;
-		flex-direction: column;
 	}
 
 	#taskContent {
@@ -730,7 +725,7 @@
 	}
 	.footerSelect {
 		flex: 1;
-		max-width: 9em;
+		max-width: 9rem;
 	}
 
 	label {

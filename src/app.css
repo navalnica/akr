@@ -57,14 +57,13 @@ body {
 #app {
   display: flex;
   flex-direction: column;
-  justify-content: space-around;
   align-items: stretch;
-  min-width: 320px;
-  /* The app width when Settings controls are fully expanded is 595px (with what font size?). 
-  Long text in task content may cause the app width to grow even further.
-  In order to avoid app width growing on increase of target sequence length, we set  max width to be 595px. 
-  32em corresponds to 595px. */
-  max-width: 32em;
+  /* set min height to 100% of viewport's height */
+  min-height: 100vh;
+  /* default width */
+  width: 32rem;
+  /* however, we allow it to shrink */
+  min-width: 18rem;
   margin: 0 auto;
   padding: 2rem;
   text-align: center;
