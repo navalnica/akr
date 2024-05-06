@@ -321,6 +321,9 @@
 			nCorrect += 1;
 			document.getElementById("inputGuess").setAttribute("aria-invalid", "false");
 			guessInputsDisabled = true;
+
+			const buttonRestart = document.getElementById("buttonRestart");
+			buttonRestart.textContent = $tr("button.next");
 		}
 		else{
 			statusText = $tr("status.mistake");
@@ -339,6 +342,9 @@
 		guessInputsDisabled = true;
 		statusText = targetSeqSeparated;
 		toggleStatusVisibility(true);
+
+		const buttonRestart = document.getElementById("buttonRestart");
+		buttonRestart.textContent = $tr("button.next");
 	}
 
 	function changeFormat() {
@@ -357,6 +363,9 @@
 	}
 	
 	function buttonRestartOnClick() {
+		const buttonRestart = document.getElementById("buttonRestart");
+		buttonRestart.textContent = $tr("button.restart");
+
 		restartState();
 
 		if (selectedMode === Modes.MEMORIZE){
@@ -388,6 +397,19 @@
 		else if (selectedMode === Modes.MEMORIZE) {
 			activateMemorizeLayout();
 		}
+
+		// this function is first called before the layout is rendered.
+		// so we need to check here if element exists.
+		const input = document.getElementById("inputGuess")
+		if (input) {
+			input.removeAttribute("aria-invalid");
+		}
+		// same here
+		const buttonRestart = document.getElementById("buttonRestart");
+		if (buttonRestart) {
+			buttonRestart.textContent = $tr("button.restart");
+		}
+
 	}
 
 	async function activateCopyLayout() {
@@ -396,7 +418,6 @@
 		await tick();
 
 		let mainCard = document.getElementById("mainCard");
-		// mainCard.style.height = "";  // TODO; remove when not needed
 		mainCard.style.justifyContent = "space-between";
 
 		// hide nodes
@@ -405,7 +426,6 @@
 		document.getElementById("buttonShowAnswer").style.display = "none";
 
 		toggleStatusVisibility(false);
-		document.getElementById("inputGuess").removeAttribute("aria-invalid");
 	}
 
 	async function activateMemorizeLayout() {
@@ -414,7 +434,6 @@
 		await tick()
 		
 		let mainCard = document.getElementById("mainCard");
-		// mainCard.style.height = "15em";  // TODO: fix the bug with task card height
 		mainCard.style.justifyContent = "space-between";
 		
 		document.getElementById("buttonReady").style.display = "";

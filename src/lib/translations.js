@@ -34,6 +34,7 @@ export default {
 
         "button.ready": "Я гатовы(-ая)",
         "button.restart": "Нанава",
+        "button.next": "Далей",
         "button.showAnswer": "Адказ",
         "button.check": "Праверыць",
         "button.close": "Зачыніць",
@@ -101,6 +102,7 @@ export default {
 
         "button.ready": "Ready",
         "button.restart": "Restart",
+        "button.next": "Next",
         "button.showAnswer": "Show Answer",
         "button.check": "Check",
         "button.close": "Close",
