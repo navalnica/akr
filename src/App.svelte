@@ -42,6 +42,7 @@
 	// match any separator or space character
 	const regexpNormalizeGuess = new RegExp(Object.values(separators).join("|") + "|\\s", "g");
 	const regexpCapitalLetter = /^[A-Z]$/;
+	const regexpLetter = /[A-Za-z]/;
 
 	const Modes = Object.freeze({
 		COPY: 'copy',
@@ -58,7 +59,6 @@
 	let formatsList = [Formats.CUSTOM, Formats.IBAN, Formats.SWIFT];
 	let selectedFormat = Formats.CUSTOM;
 
-	let customSequenceControlsBlocked;
 	$: customSequenceControlsBlocked = (selectedFormat !== Formats.CUSTOM);
 	$: separateSequenceControlsBlocked = (selectedFormat === Formats.SWIFT);
 
@@ -66,6 +66,7 @@
 	let targetSeq;
 	generateSequence();
 	$: targetSeqSeparated = separateSequence(targetSeq, selectedFormat !== Formats.IBAN);
+	$: sequenceInputType = regexpLetter.test(targetSeq) ? "text" : "numeric";
 
 	let visibleTask = true;
 	let visibleGuess = true;
@@ -78,10 +79,8 @@
 	$: statsPercent = (nCorrect + nMistakes) === 0 ? 0 : Math.round(nCorrect / (nCorrect + nMistakes) * 100);
 
 	// task on the first screen
-	let taskDescription;
 	$: taskDescription = $tr(`task.${selectedMode}`) + " " + $tr(`task.format.${selectedFormat}`);
 	// task on the second screen. currently, it's always write by memory task.
-	let taskDescriptionScreen2;
 	$: taskDescriptionScreen2 = 
 		$tr("task.write_from_memory_1") + 
 		" " + 
@@ -497,7 +496,7 @@
 		<h2>{$tr("title.text")} 🔥</h2>
 		<h3>{$tr("title.description")}</h3>
 	</hgroup>
-	
+
 	<ModalAbout/>
 </div>
 
@@ -581,7 +580,7 @@
 
 		{#if visibleGuess}
 			<p id="labelGuess">{taskDescriptionScreen2}</p>
-			<input id="inputGuess" type="text" readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
+			<input id="inputGuess" type="text" inputmode={sequenceInputType} readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 			
 			<div id="guessButtonRow">
 				<button id="buttonRestart" class="contrast outline" on:click={buttonRestartOnClick}>{$tr("button.restart")}</button>	
