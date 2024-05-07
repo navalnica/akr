@@ -528,18 +528,18 @@
 		<summary id="controlsSummary">⚙️ {$tr("settings")}</summary>
 
 		<div class="divFlexHorizontal">
-			<label class="flex-1">{$tr("settings.format")}
-				<select bind:value={selectedFormat} on:change={changeFormat}>
-					{#each formatsList as key}
-						<option value={key}>{$tr("settings.format." + key)}</option>
-					{/each}
-				</select>
-			</label>
-
 			<label class="flex-1">{$tr("settings.mode")}
 				<select bind:value={selectedMode} on:change={selectModeOnChange}>
 					{#each modesList as key}
 						<option value={key}>{$tr("settings.mode." + key)}</option>
+					{/each}
+				</select>
+			</label>
+
+			<label class="flex-1">{$tr("settings.format")}
+				<select bind:value={selectedFormat} on:change={changeFormat}>
+					{#each formatsList as key}
+						<option value={key}>{$tr("settings.format." + key)}</option>
 					{/each}
 				</select>
 			</label>
@@ -667,6 +667,7 @@
 	#controlsSummary {
 		/* 'display: flex' is required to limit item's width and align it to the left */
 		display: flex;
+		font-weight: 500;
 	}
 
 	.flex-1 {
