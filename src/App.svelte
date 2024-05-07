@@ -18,7 +18,7 @@
 	// if you change this value,
 	// you MUST change "max" value of "inputLettersMin" and "inputLettersMax" sliders.
 	// look how letters variables are used for details.
-	let sequenceLength = 8;
+	let sequenceLength = 16;
 
 	// Letters variables.
 	//
@@ -583,7 +583,7 @@
 			</label>
 			
 			<label id="inputSeparatorStep">{$tr("settings.separatorStep")}: {separateStep}
-				<input type="range" min=2 max=5 disabled={!toSeparateSeq || separateSequenceControlsBlocked}
+				<input type="range" min=2 max=8 disabled={!toSeparateSeq || separateSequenceControlsBlocked}
 				 bind:value={separateStep} on:input={separateTargetSequence}
 				>
 			</label>

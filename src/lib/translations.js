@@ -1,7 +1,7 @@
 export default {
     be: {
         "title.text": "Змаганьне з АКР",
-        "title.description": "Змагайся з абсэсіўна-кампульсіўным разладам простым практыкаваньнем",
+        "title.description": "Практыкаваньне супраць абсэсіўна-кампульсіўнага разладу",
         "title.tab": "АКР",
 
         "correct": "Адгадкі",
@@ -9,7 +9,7 @@ export default {
 
         "settings": "Наладкі",
         "settings.format": "Фармат",
-        "settings.format.custom": "Адвольны",
+        "settings.format.custom": "Лічбы і літары",
         "settings.format.iban": "IBAN",
         "settings.format.swift": "SWIFT",
         "settings.mode": "Рэжым",
@@ -56,7 +56,7 @@ export default {
 
         "about.description.header2": "Парады",
         "about.description.paragraph2.li1": "Праграма працуе ў двух рэжымах: (1) перапісаць паказаную пасьлядоўнасьць або (2) запомніць пасьлядоўнасьць і напісаць яе па памяці",
-        "about.description.paragraph2.li2": "У наладках можна зьмяніць рэжым працы і тып пасьлядоўнасьці: літары і лічбы, банкаўскі нумар IBAN, SWIFT код",
+        "about.description.paragraph2.li2": "У наладках можна зьмяніць рэжым працы і тып пасьлядоўнасьці: лічбы і літары, банкаўскі нумар IBAN, SWIFT код",
         "about.description.paragraph2.li3": "Статыстыка правільных адказаў дапамагае табе выпрацаваць давер да сябе. Яна ні ў якім разе не павінна ўспрымацца як крытыка. Каб скінуць статыстыку, проста перазагрузі старонку",
         "about.description.paragraph2.li4": "Паспрабуй засяродзіцца і выконваць практыкаваньне, не адцягваючыся ні на што. У гэтым табе можа дапамагчы таймер - 5 хвілін будзе дастаткова. Памятай, што галоўнае - якасьць, і не сьпяшайся",
 
@@ -69,7 +69,7 @@ export default {
     },
     en: {
         "title.text": "OCD fighter",
-        "title.description": "Fight Obsessive–compulsive disorder with a simple exercise",
+        "title.description": "The exercise to fight Obsessive–compulsive disorder",
         "title.tab": "OCD",
 
         "correct": "Correct",
@@ -77,7 +77,7 @@ export default {
 
         "settings": "Settings",
         "settings.format": "Format",
-        "settings.format.custom": "Custom",
+        "settings.format.custom": "Digits and letters",
         "settings.format.iban": "IBAN",
         "settings.format.swift": "SWIFT",
         "settings.mode": "Mode",
@@ -124,7 +124,7 @@ export default {
 
         "about.description.header2": "Tips",
         "about.description.paragraph2.li1": "The program works in two modes: (1) to copy a shown sequence or (2) to memorize and then write a sequence from memory",
-        "about.description.paragraph2.li2": "In the settings, you can change the working mode and the type of a sequence: letters and numbers, IBAN bank number, SWIFT code",
+        "about.description.paragraph2.li2": "In the settings, you can change the working mode and the type of a sequence: digits and letters, IBAN bank number, SWIFT code",
         "about.description.paragraph2.li3": "The statistics of correct answers helps you develop self-trust. It should never be perceived as criticism. To reset the statistics, simply reload the page",
         "about.description.paragraph2.li4": "Try to focus and practice without getting distracted. A timer can help you with that - 5 minutes will be enough. Remember, quality is the main thing, so don't rush",
 
