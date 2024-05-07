@@ -18,9 +18,9 @@ export default {
         "settings.seqLen": "Даўжыня пасьлядоўнасьці",
         "settings.minLetters": "Мін літараў",
         "settings.maxLetters": "Макс літараў",
-        "settings.separateSeq": "Раздзяляць пасьлядоўнасьць",
+        "settings.separateSeq": "Разьдзяляць пасьлядоўнасьць",
         "settings.separatorStep": "Крок",
-        "settings.separator": "Раздзяляльнік",
+        "settings.separator": "Разьдзяляльнік",
         "settings.separator.space": "Прагал",
         "settings.separator.apostrophe": "Апостраф",
 

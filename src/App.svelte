@@ -71,9 +71,25 @@
 	let visibleTask = true;
 	let visibleGuess = true;
 
+	const StatusHelper = Object.freeze({
+		// use some special characters to avoid confusion with generated sequence value
+		correct: '!@#correct',
+		mistake: '!@#mistake',
+	});
+	// set default value not to leave <p> tag blank and to occupy space in layout
+	let statusHelperValue = "default";
+	// if value is not correct or mistake, show it as is.
+	// use dynamic svelte property to always use text from the current locale.
+	$: statusText = statusHelperValue === StatusHelper.correct 
+		? $tr("status.correct") 
+		: (statusHelperValue === StatusHelper.mistake 
+			? $tr("status.mistake") 
+			: statusHelperValue);
+
 	let guess = "";
-	let statusText = "default";  // default value not to leave <p> tag blank and to occupy space in layout
 	let guessInputsDisabled = false;
+	// use dynamic svelte property to always use text from the current locale
+	$: buttonRestartContent = guessInputsDisabled ? $tr("button.next") : $tr("button.restart");
 	let nCorrect = 0;
 	let nMistakes = 0;
 	$: statsPercent = (nCorrect + nMistakes) === 0 ? 0 : Math.round(nCorrect / (nCorrect + nMistakes) * 100);
@@ -317,16 +333,13 @@
 		console.log("Check guess", guessNorm, "to be equal to target", targetSeq)
 		
 		if (guessNorm === targetSeq){
-			statusText = $tr("status.correct");
+			statusHelperValue = StatusHelper.correct;
 			nCorrect += 1;
 			document.getElementById("inputGuess").setAttribute("aria-invalid", "false");
 			guessInputsDisabled = true;
-
-			const buttonRestart = document.getElementById("buttonRestart");
-			buttonRestart.textContent = $tr("button.next");
 		}
 		else{
-			statusText = $tr("status.mistake");
+			statusHelperValue = StatusHelper.mistake;
 			nMistakes += 1;
 			document.getElementById("inputGuess").setAttribute("aria-invalid", "true");
 		}
@@ -340,11 +353,8 @@
 
 	function showAnswer() {
 		guessInputsDisabled = true;
-		statusText = targetSeqSeparated;
+		statusHelperValue = targetSeqSeparated;
 		toggleStatusVisibility(true);
-
-		const buttonRestart = document.getElementById("buttonRestart");
-		buttonRestart.textContent = $tr("button.next");
 	}
 
 	function changeFormat() {
@@ -363,9 +373,6 @@
 	}
 	
 	function buttonRestartOnClick() {
-		const buttonRestart = document.getElementById("buttonRestart");
-		buttonRestart.textContent = $tr("button.restart");
-
 		restartState();
 
 		if (selectedMode === Modes.MEMORIZE){
@@ -404,12 +411,6 @@
 		if (input) {
 			input.removeAttribute("aria-invalid");
 		}
-		// same here
-		const buttonRestart = document.getElementById("buttonRestart");
-		if (buttonRestart) {
-			buttonRestart.textContent = $tr("button.restart");
-		}
-
 	}
 
 	async function activateCopyLayout() {
@@ -602,7 +603,7 @@
 			<input id="inputGuess" type="text" inputmode={sequenceInputType} readonly={guessInputsDisabled} bind:value={guess} on:input={inputGuessOnInput}/>
 			
 			<div id="guessButtonRow">
-				<button id="buttonRestart" class="contrast outline" on:click={buttonRestartOnClick}>{$tr("button.restart")}</button>	
+				<button id="buttonRestart" class="contrast outline" on:click={buttonRestartOnClick}>{buttonRestartContent}</button>	
 				<button id="buttonShowAnswer" class="contrast outline" on:click={showAnswer} disabled={guessInputsDisabled}>{$tr("button.showAnswer")}</button>	
 				<button id="buttonCheck" on:click={checkGuess} disabled={guessInputsDisabled}>{$tr("button.check")}</button>
 			</div>
